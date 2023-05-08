@@ -1,0 +1,3 @@
+C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/matrix_multiplication_with_openmp.dir
+C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/rebuild_cache.dir

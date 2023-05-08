@@ -1,0 +1,140 @@
+The MPI test test_mpi for C in mode normal failed to compile with the following output:
+Change Dir: C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-alz9b4
+
+Run Build Command(s):C:/Users/erikz/AppData/Local/JetBrains/Toolbox/apps/CLion/ch-0/231.8109.222/bin/ninja/win/x64/ninja.exe cmTC_299b2 && [1/2] Building C object CMakeFiles/cmTC_299b2.dir/test_mpi.c.obj
+FAILED: CMakeFiles/cmTC_299b2.dir/test_mpi.c.obj 
+C:\Users\erikz\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\231.8109.222\bin\mingw\bin\gcc.exe   -fdiagnostics-color=always -o CMakeFiles/cmTC_299b2.dir/test_mpi.c.obj -c C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-alz9b4/test_mpi.c
+C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-alz9b4/test_mpi.c:1:10: fatal error: mpi.h: No such file or directory
+    1 | #include <mpi.h>
+      |          ^~~~~~~
+compilation terminated.
+ninja: build stopped: subcommand failed.
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-3vnglz
+
+Run Build Command(s):C:/Users/erikz/AppData/Local/JetBrains/Toolbox/apps/CLion/ch-0/231.8109.222/bin/ninja/win/x64/ninja.exe cmTC_9e448 && [1/2] Building CXX object CMakeFiles/cmTC_9e448.dir/test_mpi.cpp.obj
+FAILED: CMakeFiles/cmTC_9e448.dir/test_mpi.cpp.obj 
+C:\Users\erikz\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\231.8109.222\bin\mingw\bin\g++.exe   -fdiagnostics-color=always -o CMakeFiles/cmTC_9e448.dir/test_mpi.cpp.obj -c C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-3vnglz/test_mpi.cpp
+C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-3vnglz/test_mpi.cpp:1:10: fatal error: mpi.h: No such file or directory
+    1 | #include <mpi.h>
+      |          ^~~~~~~
+compilation terminated.
+ninja: build stopped: subcommand failed.
+
+
+
+The MPI test test_mpi for C in mode normal failed to compile with the following output:
+Change Dir: C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-pu5t1p
+
+Run Build Command(s):C:/Users/erikz/AppData/Local/JetBrains/Toolbox/apps/CLion/ch-0/231.8109.222/bin/ninja/win/x64/ninja.exe cmTC_72433 && [1/2] Building C object CMakeFiles/cmTC_72433.dir/test_mpi.c.obj
+FAILED: CMakeFiles/cmTC_72433.dir/test_mpi.c.obj 
+C:\Users\erikz\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\231.8109.222\bin\mingw\bin\gcc.exe   -fdiagnostics-color=always -o CMakeFiles/cmTC_72433.dir/test_mpi.c.obj -c C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-pu5t1p/test_mpi.c
+C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-pu5t1p/test_mpi.c:1:10: fatal error: mpi.h: No such file or directory
+    1 | #include <mpi.h>
+      |          ^~~~~~~
+compilation terminated.
+ninja: build stopped: subcommand failed.
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-nw1rf8
+
+Run Build Command(s):C:/Users/erikz/AppData/Local/JetBrains/Toolbox/apps/CLion/ch-0/231.8109.222/bin/ninja/win/x64/ninja.exe cmTC_20640 && [1/2] Building CXX object CMakeFiles/cmTC_20640.dir/test_mpi.cpp.obj
+FAILED: CMakeFiles/cmTC_20640.dir/test_mpi.cpp.obj 
+C:\Users\erikz\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\231.8109.222\bin\mingw\bin\g++.exe   -fdiagnostics-color=always -o CMakeFiles/cmTC_20640.dir/test_mpi.cpp.obj -c C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-nw1rf8/test_mpi.cpp
+C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-nw1rf8/test_mpi.cpp:1:10: fatal error: mpi.h: No such file or directory
+    1 | #include <mpi.h>
+      |          ^~~~~~~
+compilation terminated.
+ninja: build stopped: subcommand failed.
+
+
+
+The MPI test test_mpi for C in mode normal failed to compile with the following output:
+Change Dir: C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-pdnckn
+
+Run Build Command(s):C:/Users/erikz/AppData/Local/JetBrains/Toolbox/apps/CLion/ch-0/231.8109.222/bin/ninja/win/x64/ninja.exe cmTC_8012c && [1/2] Building C object CMakeFiles/cmTC_8012c.dir/test_mpi.c.obj
+FAILED: CMakeFiles/cmTC_8012c.dir/test_mpi.c.obj 
+C:\Users\erikz\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\231.8109.222\bin\mingw\bin\gcc.exe   -fdiagnostics-color=always -o CMakeFiles/cmTC_8012c.dir/test_mpi.c.obj -c C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-pdnckn/test_mpi.c
+C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-pdnckn/test_mpi.c:1:10: fatal error: mpi.h: No such file or directory
+    1 | #include <mpi.h>
+      |          ^~~~~~~
+compilation terminated.
+ninja: build stopped: subcommand failed.
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-s43ru5
+
+Run Build Command(s):C:/Users/erikz/AppData/Local/JetBrains/Toolbox/apps/CLion/ch-0/231.8109.222/bin/ninja/win/x64/ninja.exe cmTC_ae7a0 && [1/2] Building CXX object CMakeFiles/cmTC_ae7a0.dir/test_mpi.cpp.obj
+FAILED: CMakeFiles/cmTC_ae7a0.dir/test_mpi.cpp.obj 
+C:\Users\erikz\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\231.8109.222\bin\mingw\bin\g++.exe   -fdiagnostics-color=always -o CMakeFiles/cmTC_ae7a0.dir/test_mpi.cpp.obj -c C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-s43ru5/test_mpi.cpp
+C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-s43ru5/test_mpi.cpp:1:10: fatal error: mpi.h: No such file or directory
+    1 | #include <mpi.h>
+      |          ^~~~~~~
+compilation terminated.
+ninja: build stopped: subcommand failed.
+
+
+
+The MPI test test_mpi for C in mode normal failed to compile with the following output:
+Change Dir: C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-x7lxlo
+
+Run Build Command(s):C:/Users/erikz/AppData/Local/JetBrains/Toolbox/apps/CLion/ch-0/231.8109.222/bin/ninja/win/x64/ninja.exe cmTC_d5b0d && [1/2] Building C object CMakeFiles/cmTC_d5b0d.dir/test_mpi.c.obj
+FAILED: CMakeFiles/cmTC_d5b0d.dir/test_mpi.c.obj 
+C:\Users\erikz\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\231.8109.222\bin\mingw\bin\gcc.exe   -fdiagnostics-color=always -o CMakeFiles/cmTC_d5b0d.dir/test_mpi.c.obj -c C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-x7lxlo/test_mpi.c
+C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-x7lxlo/test_mpi.c:1:10: fatal error: mpi.h: No such file or directory
+    1 | #include <mpi.h>
+      |          ^~~~~~~
+compilation terminated.
+ninja: build stopped: subcommand failed.
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-7fmad2
+
+Run Build Command(s):C:/Users/erikz/AppData/Local/JetBrains/Toolbox/apps/CLion/ch-0/231.8109.222/bin/ninja/win/x64/ninja.exe cmTC_124ee && [1/2] Building CXX object CMakeFiles/cmTC_124ee.dir/test_mpi.cpp.obj
+FAILED: CMakeFiles/cmTC_124ee.dir/test_mpi.cpp.obj 
+C:\Users\erikz\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\231.8109.222\bin\mingw\bin\g++.exe   -fdiagnostics-color=always -o CMakeFiles/cmTC_124ee.dir/test_mpi.cpp.obj -c C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-7fmad2/test_mpi.cpp
+C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-7fmad2/test_mpi.cpp:1:10: fatal error: mpi.h: No such file or directory
+    1 | #include <mpi.h>
+      |          ^~~~~~~
+compilation terminated.
+ninja: build stopped: subcommand failed.
+
+
+
+The MPI test test_mpi for C in mode normal failed to compile with the following output:
+Change Dir: C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-h724e6
+
+Run Build Command(s):C:/Users/erikz/AppData/Local/JetBrains/Toolbox/apps/CLion/ch-0/231.8109.222/bin/ninja/win/x64/ninja.exe cmTC_06c81 && [1/2] Building C object CMakeFiles/cmTC_06c81.dir/test_mpi.c.obj
+FAILED: CMakeFiles/cmTC_06c81.dir/test_mpi.c.obj 
+C:\Users\erikz\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\231.8109.222\bin\mingw\bin\gcc.exe   -fdiagnostics-color=always -o CMakeFiles/cmTC_06c81.dir/test_mpi.c.obj -c C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-h724e6/test_mpi.c
+C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-h724e6/test_mpi.c:1:10: fatal error: mpi.h: No such file or directory
+    1 | #include <mpi.h>
+      |          ^~~~~~~
+compilation terminated.
+ninja: build stopped: subcommand failed.
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-cel0sy
+
+Run Build Command(s):C:/Users/erikz/AppData/Local/JetBrains/Toolbox/apps/CLion/ch-0/231.8109.222/bin/ninja/win/x64/ninja.exe cmTC_697e7 && [1/2] Building CXX object CMakeFiles/cmTC_697e7.dir/test_mpi.cpp.obj
+FAILED: CMakeFiles/cmTC_697e7.dir/test_mpi.cpp.obj 
+C:\Users\erikz\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\231.8109.222\bin\mingw\bin\g++.exe   -fdiagnostics-color=always -o CMakeFiles/cmTC_697e7.dir/test_mpi.cpp.obj -c C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-cel0sy/test_mpi.cpp
+C:/Users/erikz/.coding/GitHub/matrix-multiplication-with-openmp/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-cel0sy/test_mpi.cpp:1:10: fatal error: mpi.h: No such file or directory
+    1 | #include <mpi.h>
+      |          ^~~~~~~
+compilation terminated.
+ninja: build stopped: subcommand failed.
+
+
+
