@@ -3,7 +3,7 @@ project(matrix_multiplication_with_openmp)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(matrix_multiplication_with_openmp main_openmp.cpp main_mpi.cpp)
+add_executable(matrix_multiplication_with_openmp main_openmp.cpp main_mpi.cpp main_sequential.cpp)
 
 find_package(OpenMP REQUIRED)
 if(OpenMP_CXX_FOUND)
