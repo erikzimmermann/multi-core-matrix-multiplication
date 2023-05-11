@@ -1,4 +1,0 @@
-# ninja log v5
-4	307	7040562675735453	CMakeFiles/matrix_multiplication_with_openmp.dir/main.cpp.obj	380894fc6b65643b
-307	392	7040562676551943	matrix_multiplication_with_openmp.exe	60296ef807ed4705
-1	142	7040564830066333	build.ninja	ebfe5b39aa6d5e9
