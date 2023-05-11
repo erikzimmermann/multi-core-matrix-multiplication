@@ -139,7 +139,7 @@ void printMatrix(double m[N][N]) {
     }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
     fillRandomly();
 
     auto start_time = std::chrono::system_clock::now();
@@ -188,9 +188,17 @@ int main() {
      * Elapsed time: 29.5544 seconds
      */
 
-//    compute_sequential();
-//    mm_naive();
-    compute_openmp();
+    // check if argv[0] is "seq"
+    if (argc > 1 && std::string(argv[1]) == "seq") {
+        compute_sequential();
+    } else if (argc > 1 && std::string(argv[1]) == "naive") {
+        mm_naive();
+    } else if (argc > 1 && std::string(argv[1]) == "omp") {
+        compute_openmp();
+    } else {
+        std::cout << "Specify type: seq, naive, omp" << std::endl;
+        return 1;
+    }
 
     auto end_time = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end_time - start_time;
