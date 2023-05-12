@@ -77,11 +77,34 @@ void computePart(const double *a, const double *b, double *c, int block_size) {
     }
 }
 
-void sendRowWise(double *a, int block_size);
+void sendRowWise(double *a, int block_size) {
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int width = int(log2(size - 1));
+
+    int next_process = rank - width;
+    if (next_process < 0) next_process += size - 1;
+
+    MPI_Send(&a[0][0], block_size * block_size, MPI_DOUBLE, next_process, rank, MPI_COMM_WORLD);
+}
 
 void receiveRowWise(double *a, int block_size);
 
-void sendColWise(double *b, int block_size);
+void sendColWise(double *b, int block_size) {
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int width = int(log2(size - 1));
+
+    int next_process = rank - 1;
+
+    if (next_process % width == 0) next_process += width;
+
+    MPI_Send(&b[0][0], block_size * block_size, MPI_DOUBLE, next_process, rank, MPI_COMM_WORLD);
+}
 
 void receiveColWise(double *b, int block_size);
 
