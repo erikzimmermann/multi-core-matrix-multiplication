@@ -1,11 +1,13 @@
 #include <iostream>
 #include <chrono>
+#include <mpi.h>
 #include <random>
+#include "mpi_mm.h"
 
 const double CHECK_SUM = -12395;
 std::seed_seq SEED{42};
+const int N = 16; // 2048
 
-const int N = 2048;
 const int THRESHOLD = 32768;
 const int BLOCK_SIZE = 32;
 
@@ -22,6 +24,16 @@ void fillRandomly() {
             a[i][j] = distribution(generator);
             b[i][j] = distribution(generator);
         }
+    }
+}
+
+void printMatrix(double *m, int rows, int cols) {
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            std::cout << *m << " ";
+            m++;
+        }
+        std::cout << std::endl;
     }
 }
 
@@ -118,6 +130,43 @@ void compute_openmp() {
     }
 }
 
+void start_test(MPI_Comm instance) {
+    int num_procs, rank;
+    MPI_Comm_size(instance, &num_procs);
+    MPI_Comm_rank(instance, &rank);
+
+    // display process number and rank
+    std::cout << "" << rank << " of " << num_procs << std::endl;
+}
+
+void compute_mpi(int argc, char* argv[]) {
+    int rank, size;
+
+    MPI_Init(&argc, &argv); // Initialize MPI environment
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank); // Get the rank of the current process
+    MPI_Comm_size(MPI_COMM_WORLD, &size); // Get the total number of processes
+
+    int processes = size - 1;
+    if (log2(processes) != int(log2(processes)) || int(log2(processes)) % 2 != 0) {
+        if (rank == 0) std::cerr << "Number of processes must be: 4^x + 1" << std::endl;
+        MPI_Abort(MPI_COMM_WORLD, 1);
+        return;
+    }
+
+    if (rank == 0) {
+        std::cout << "Distributing matrix" << std::endl;
+        // distribute matrix by using the pointers to the matrices a and b
+        distributeMatrix(&a[0][0], &b[0][0], N, size);
+        collectMatrix(&c[0][0], N);
+    } else {
+        int width = int(log2(size - 1));
+        int blockSize = N / width;
+        handleMatrixPart(blockSize, width);
+    }
+
+    MPI_Finalize();
+}
+
 short calculateChecksum() {
     short sum = 0;
 
@@ -130,19 +179,31 @@ short calculateChecksum() {
     return sum;
 }
 
-void printMatrix(double m[N][N]) {
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
-            std::cout << m[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
-}
-
 int main(int argc, char* argv[]) {
     fillRandomly();
 
     auto start_time = std::chrono::system_clock::now();
+
+    // check if argv[0] is "seq"
+    if (argc > 1 && std::string(argv[1]) == "seq") {
+        compute_sequential();
+    } else if (argc > 1 && std::string(argv[1]) == "naive") {
+        mm_naive();
+    } else if (argc > 1 && std::string(argv[1]) == "omp") {
+        compute_openmp();
+    } else if (argc > 1 && std::string(argv[1]) == "mpi") {
+        compute_mpi(argc, argv);
+    } else {
+        std::cerr << "Specify type: seq, naive, omp, mpi" << std::endl;
+        return 1;
+    }
+
+    auto end_time = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end_time - start_time;
+
+    short sum = calculateChecksum();
+    std::cout << "sum: " << sum << (sum == CHECK_SUM ? " (Correct)" : " (INCORRECT)") << std::endl;
+    std::cout << "Elapsed time: " << elapsed_seconds.count() << " seconds" << std::endl;
 
     /*
      * seq
@@ -155,6 +216,10 @@ int main(int argc, char* argv[]) {
      * sum: -12395 (Correct)
      * Elapsed time: 40.8208 seconds
      *
+     * 2048:32768:Palma
+     * sum: -12395 (Correct)
+     * Elapsed time: 42.1391 seconds
+     *
      * #####
      *
      * naive
@@ -166,6 +231,10 @@ int main(int argc, char* argv[]) {
      * 2048
      * sum: -12395 (Correct)
      * Elapsed time: 280.025 seconds
+     *
+     * 2048:Palma
+     * sum: -12395 (Correct)
+     * Elapsed time: 172.37 seconds
      *
      * #####
      *
@@ -186,26 +255,11 @@ int main(int argc, char* argv[]) {
      * 2048:128
      * sum: -12395 (Correct)
      * Elapsed time: 29.5544 seconds
+     *
+     * 2048:128:Palma:72
+     * sum: -12395 (Correct)
+     * Elapsed time: 7.78991 seconds
      */
-
-    // check if argv[0] is "seq"
-    if (argc > 1 && std::string(argv[1]) == "seq") {
-        compute_sequential();
-    } else if (argc > 1 && std::string(argv[1]) == "naive") {
-        mm_naive();
-    } else if (argc > 1 && std::string(argv[1]) == "omp") {
-        compute_openmp();
-    } else {
-        std::cout << "Specify type: seq, naive, omp" << std::endl;
-        return 1;
-    }
-
-    auto end_time = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end_time - start_time;
-
-    short sum = calculateChecksum();
-    std::cout << "sum: " << sum << (sum == CHECK_SUM ? " (Correct)" : " (INCORRECT)") << std::endl;
-    std::cout << "Elapsed time: " << elapsed_seconds.count() << " seconds" << std::endl;
 
     return 0;
 }
