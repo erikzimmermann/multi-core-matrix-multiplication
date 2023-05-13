@@ -38,12 +38,12 @@ void printMatrix(double *m, int rows, int cols) {
 }
 
 void mm_naive() {
-    int check = N / 100;
+//    int check = N / 100;
 
     for (int i = 0; i < N; ++i) {
-        if (i % check == 0) {
-            std::cout << "it " << i << std::endl;
-        }
+//        if (i % check == 0) {
+//            std::cout << "it " << i << std::endl;
+//        }
 
         for (int j = 0; j < N; ++j) {
             for (int k = 0; k < N; ++k) {
@@ -139,6 +139,18 @@ void start_test(MPI_Comm instance) {
     std::cout << "" << rank << " of " << num_procs << std::endl;
 }
 
+short calculateChecksum() {
+    short sum = 0;
+
+    for (auto &i: c) {
+        for (auto &j: i) {
+            sum += j * 1000;  // ignore casting issues
+        }
+    }
+
+    return sum;
+}
+
 void compute_mpi(int argc, char* argv[]) {
     int rank, size;
 
@@ -154,56 +166,63 @@ void compute_mpi(int argc, char* argv[]) {
     }
 
     if (rank == 0) {
+        fillRandomly();
+//        std::cout << "Matrix b" << std::endl;
+//        printMatrix(&b[0][0], N, N);
+//        std::cout << std::endl;
+//        std::cout << "Matrix a" << std::endl;
+//        printMatrix(&a[0][0], N, N);
+//        std::cout << std::endl;
+
+        auto start_time = std::chrono::system_clock::now();
+
         std::cout << "Distributing matrix" << std::endl;
         // distribute matrix by using the pointers to the matrices a and b
-        distributeMatrix(&a[0][0], &b[0][0], N, size);
+        distributeMatrix(&a[0][0], &b[0][0], N);
         collectMatrix(&c[0][0], N);
+
+        auto end_time = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end_time - start_time;
+
+        short sum = calculateChecksum();
+        std::cout << "sum: " << sum << (sum == CHECK_SUM ? " (Correct)" : " (INCORRECT)") << std::endl;
+        std::cout << "Elapsed time: " << elapsed_seconds.count() << " seconds" << std::endl;
+
+        printMatrix(&c[0][0], N, N);
     } else {
-        int width = int(log2(size - 1));
-        int blockSize = N / width;
-        handleMatrixPart(blockSize, width);
+        handleMatrixPart(N);
     }
 
     MPI_Finalize();
 }
 
-short calculateChecksum() {
-    short sum = 0;
-
-    for (auto &i: c) {
-        for (auto &j: i) {
-            sum += j * 1000;  // ignore casting issues
-        }
-    }
-
-    return sum;
-}
-
 int main(int argc, char* argv[]) {
-    fillRandomly();
-
-    auto start_time = std::chrono::system_clock::now();
-
-    // check if argv[0] is "seq"
-    if (argc > 1 && std::string(argv[1]) == "seq") {
-        compute_sequential();
-    } else if (argc > 1 && std::string(argv[1]) == "naive") {
-        mm_naive();
-    } else if (argc > 1 && std::string(argv[1]) == "omp") {
-        compute_openmp();
-    } else if (argc > 1 && std::string(argv[1]) == "mpi") {
+    if (argc > 1 && std::string(argv[1]) == "mpi") {
         compute_mpi(argc, argv);
     } else {
-        std::cerr << "Specify type: seq, naive, omp, mpi" << std::endl;
-        return 1;
+        fillRandomly();
+        auto start_time = std::chrono::system_clock::now();
+
+        if (argc > 1 && std::string(argv[1]) == "seq") {
+            compute_sequential();
+        } else if (argc > 1 && std::string(argv[1]) == "naive") {
+            mm_naive();
+        } else if (argc > 1 && std::string(argv[1]) == "omp") {
+            compute_openmp();
+        } else {
+            std::cerr << "Specify type: seq, naive, omp, mpi" << std::endl;
+            return 1;
+        }
+
+        auto end_time = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end_time - start_time;
+
+        short sum = calculateChecksum();
+        std::cout << "sum: " << sum << (sum == CHECK_SUM ? " (Correct)" : " (INCORRECT)") << std::endl;
+        std::cout << "Elapsed time: " << elapsed_seconds.count() << " seconds" << std::endl;
+
+        printMatrix(&c[0][0], N, N);
     }
-
-    auto end_time = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end_time - start_time;
-
-    short sum = calculateChecksum();
-    std::cout << "sum: " << sum << (sum == CHECK_SUM ? " (Correct)" : " (INCORRECT)") << std::endl;
-    std::cout << "Elapsed time: " << elapsed_seconds.count() << " seconds" << std::endl;
 
     /*
      * seq

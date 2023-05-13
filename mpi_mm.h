@@ -3,13 +3,13 @@
 
 #include <mpi.h>
 
-void distributeMatrix(double *a, double *b, int N, int processes);
+void distributeMatrix(double *a, double *b, int N);
 
 void collectMatrix(double *c, int N);
 
 void receiveMatrixPart(double *a, double *b, int block_size);
 
-void handleMatrixPart(int blockSize, int width);
+void handleMatrixPart(int N);
 
 
 #endif //MATRIX_MULTIPLICATION_WITH_OPENMP_MPI_MM_H
