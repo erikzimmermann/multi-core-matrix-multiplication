@@ -124,7 +124,7 @@ void compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n) {
         std::chrono::duration<double> elapsed_seconds = end_time - start_time;
 
         auto sum = short(calculateChecksum(c, n));
-        std::cout << "type: " << "mpi (" << size << ")" << ", n: " << n << ", time: " << elapsed_seconds.count() << "s, checksum: " << sum << std::endl;
+        std::cout << elapsed_seconds.count() << "; checksum: " << sum << std::endl;
     } else {
         handleMatrixPart(n);
     }
@@ -133,7 +133,7 @@ void compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc < 3) {
+    if (argc != 3) {
         std::cerr << "Parameters: <n>, <seq, naive, omp, mpi>" << std::endl;
         return 1;
     }
@@ -171,7 +171,7 @@ int main(int argc, char* argv[]) {
         std::chrono::duration<double> elapsed_seconds = end_time - start_time;
 
         auto sum = short(calculateChecksum(c, n));
-        std::cout << "type: " << type << ", n: " << n << ", time: " << elapsed_seconds.count() << "s, checksum: " << sum << std::endl;
+        std::cout << elapsed_seconds.count() << "; checksum: " << sum << std::endl;
     }
 
     return 0;
