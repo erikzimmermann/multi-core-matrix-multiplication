@@ -15,7 +15,7 @@ void distributeMatrix(const float *a, const float *b, int N) {
     int cell = width - 1;
 
     for (int i = 0; i < processes - 1; ++i) {
-        // determine cell information
+        // compute cell index for multiplying the matrix block-wise
         if (i % width != 0) {
             cell++;
             if (cell == width) cell = 0;
@@ -94,19 +94,6 @@ void computePart(float *a, float *b, float *c, int block_size) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     multiplyMatrix(a, b, c, block_size);
-
-//    for (int row = 0; row < block_size; ++row) {
-//        for (int col = 0; col < block_size; ++col) {
-//            int a_ptr = row * block_size;
-//            int b_ptr = col;
-//            int c_ptr = row * block_size + col;
-//
-//            for (int i = 0; i < block_size; ++i) {
-//                *(c + c_ptr) += *(a + a_ptr++) * *(b + b_ptr);
-//                b_ptr += block_size;
-//            }
-//        }
-//    }
 }
 
 void sendRowWise(float *b, int block_size) {
