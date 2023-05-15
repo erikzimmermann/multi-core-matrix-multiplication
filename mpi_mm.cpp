@@ -2,8 +2,8 @@
 #include <mpi.h>
 #include <random>
 #include <iostream>
+#include "mm.h"
 
-// correct
 void distributeMatrix(const float *a, const float *b, int N) {
     int processes;
     MPI_Comm_size(MPI_COMM_WORLD, &processes);
@@ -49,7 +49,6 @@ void distributeMatrix(const float *a, const float *b, int N) {
     }
 }
 
-// correct
 void collectMatrix(float *c, int N) {
     int processes;
     MPI_Comm_size(MPI_COMM_WORLD, &processes);
@@ -79,7 +78,6 @@ void collectMatrix(float *c, int N) {
     }
 }
 
-// correct
 void receiveMatrixPart(float *a, float *b, int block_size) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -91,23 +89,24 @@ void receiveMatrixPart(float *a, float *b, int block_size) {
     MPI_Recv(b, block_size * block_size, MPI_FLOAT, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 }
 
-// correct
-void computePart(const float *a, const float *b, float *c, int block_size) {
+void computePart(float *a, float *b, float *c, int block_size) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    for (int row = 0; row < block_size; ++row) {
-        for (int col = 0; col < block_size; ++col) {
-            int a_ptr = row * block_size;
-            int b_ptr = col;
-            int c_ptr = row * block_size + col;
+    multiplyMatrix(a, b, c, block_size);
 
-            for (int i = 0; i < block_size; ++i) {
-                *(c + c_ptr) += *(a + a_ptr++) * *(b + b_ptr);
-                b_ptr += block_size;
-            }
-        }
-    }
+//    for (int row = 0; row < block_size; ++row) {
+//        for (int col = 0; col < block_size; ++col) {
+//            int a_ptr = row * block_size;
+//            int b_ptr = col;
+//            int c_ptr = row * block_size + col;
+//
+//            for (int i = 0; i < block_size; ++i) {
+//                *(c + c_ptr) += *(a + a_ptr++) * *(b + b_ptr);
+//                b_ptr += block_size;
+//            }
+//        }
+//    }
 }
 
 void sendRowWise(float *b, int block_size) {

@@ -3,27 +3,23 @@
 #include <mpi.h>
 #include <random>
 #include "mpi_mm.h"
+#include "mm.h"
 
 const double CHECK_SUM = 30786; // for N=2048
 std::seed_seq SEED{42};
-const int N = 2048; // 2048
 
-const int THRESHOLD = 32768;
+//const int THRESHOLD = 32768;
 const int BLOCK_SIZE = 32;
 
-float a[N][N];
-float b[N][N];
-float c[N][N];
-
-void fillRandomly() {
+void fillRandomly(float *a, float *b, float *c, int n) {
     std::default_random_engine generator(SEED);
     std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
-            a[i][j] = distribution(generator);
-            b[i][j] = distribution(generator);
-            c[i][j] = 0;
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            *(a + i * n + j) = distribution(generator);
+            *(b + i * n + j) = distribution(generator);
+            *(c + i * n + j) = 0;
         }
     }
 }
@@ -47,106 +43,64 @@ void printMatrix(float *m, int rows, int cols) {
     std::cout << "Sum=" << sum << std::endl;
 }
 
-void mm_naive() {
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
-            for (int k = 0; k < N; ++k) {
-                // compute c matrix from a and b
-                c[i][j] += a[i][k] * b[k][j];
+void mm_naive(float *a, float *b, float *c, int n) {
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            float *cptr = c + i * n + j;
+            float *aptr = a + i * n;
+            float *bptr = b + j;
+            
+            for (int k = 0; k < n; ++k) {
+                *cptr += *(aptr++) * *bptr;
+                bptr += n;
             }
         }
     }
 }
 
-void mm_sequential(int crow, int ccol,
-                   int arow, int acol,
-                   int brow, int bcol,
-                   int l, int m, int n) {
-    int lhalf[3], mhalf[3], nhalf[3];
-    int i, j, k;
-    float *aptr, *bptr, *cptr;
-
-    if (m * n > THRESHOLD) {
-        lhalf[0] = 0; lhalf[1] = l/2; lhalf[2] = l - l/2;
-        mhalf[0] = 0; mhalf[1] = m/2; mhalf[2] = l - m/2;
-        nhalf[0] = 0; nhalf[1] = n/2; nhalf[2] = l - n/2;
-
-        for (i = 0; i < 2; i++) {
-            for (j = 0; j < 2; j++) {
-                for (k = 0; k < 2; k++) {
-                    mm_sequential(crow + lhalf[i], ccol + mhalf[j],
-                                  arow + lhalf[i], acol + mhalf[k],
-                                  brow + mhalf[k], bcol + nhalf[j],
-                                  lhalf[i + 1], mhalf[k + 1], nhalf[k + 1]);
-                }
-            }
-        }
-    } else {
-        for (i = 0; i < l; i++) {
-            for (j = 0; j < n; j++) {
-                cptr = &c[crow + i][ccol + j];
-                aptr = &a[arow + i][acol];
-                bptr = &b[brow][bcol + j];
-
-                for (k = 0; k < m; k++) {
-                    *cptr += *(aptr++) * *bptr;
-                    bptr += N;
-                }
-            }
-        }
-    }
-}
-
-void compute_sequential() {
-    mm_sequential(0, 0, 0, 0, 0, 0, N, N, N);
-}
-
-void mm_openmp(int aRow, int bCol) {
-    int remaining = std::min(N - aRow, BLOCK_SIZE);
+void mm_openmp(float *a, float *b, float *c, int n, int a_row, int b_col) {
+    int remaining = std::min(n - a_row, BLOCK_SIZE);
 
     for (int i = 0; i < remaining; i++) {
         for (int j = 0; j < remaining; j++) {
-            float *cPtr = &c[aRow + i][bCol + j];
-            float *aPtr = &a[aRow + i][0];
-            float *bPtr = &b[0][bCol + j];
+            float *cPtr = c + (a_row + i) * n + b_col + j;
+            float *aPtr = a + (a_row + i) * n;
+            float *bPtr = b + b_col + j;
 
-            for (int k = 0; k < N; ++k) {
+            for (int k = 0; k < n; ++k) {
                 *cPtr += *(aPtr++) * *bPtr;
-                bPtr += N;
+                bPtr += n;
             }
         }
     }
 }
 
-void compute_openmp() {
-    int iter = std::ceil(float(N) / float(BLOCK_SIZE));
-    std::cout << iter * iter << " jobs" << std::endl;
+void compute_openmp(float *a, float *b, float *c, int n) {
+    int iter = std::ceil(float(n) / float(BLOCK_SIZE));
 
-    #pragma omp parallel default(none) shared(iter)
+    #pragma omp parallel default(none) shared(a, b, c, n, iter)
     #pragma omp single
     {
         for (int i = 0; i < iter; ++i) {
             for (int j = 0; j < iter; ++j) {
                 #pragma omp task
-                mm_openmp(i * BLOCK_SIZE, j * BLOCK_SIZE);
+                mm_openmp(a, b, c, n, i * BLOCK_SIZE, j * BLOCK_SIZE);
             }
         }
     }
 }
 
-double calculateChecksum() {
+double calculateChecksum(float *c, int n) {
     double sum = 0;
 
-    for (auto &i: c) {
-        for (auto &j: i) {
-            sum += j;  // ignore casting issues
-        }
+    for (int i = 0; i < n * n; ++i) {
+        sum += *(c + i);
     }
-
+    
     return sum;
 }
 
-void compute_mpi(int argc, char* argv[]) {
+void compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n) {
     int rank, size;
 
     MPI_Init(&argc, &argv); // Initialize MPI environment
@@ -159,44 +113,58 @@ void compute_mpi(int argc, char* argv[]) {
         MPI_Abort(MPI_COMM_WORLD, 1);
         return;
     }
-
+    
     if (rank == 0) {
-        fillRandomly();
+        fillRandomly(a, b, c, n);
 
-        std::cout << "Distributing matrix" << std::endl;
         // distribute matrix by using the pointers to the matrices a and b
-        distributeMatrix(&a[0][0], &b[0][0], N);
+        distributeMatrix(a, b, n);
 
-        std::cout << "Waiting for result" << std::endl;
         auto start_time = std::chrono::system_clock::now();
-        collectMatrix(&c[0][0], N);
+        collectMatrix(c, n);
 
         auto end_time = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end_time - start_time;
 
-        auto sum = short(calculateChecksum());
-        std::cout << "sum: " << sum << (sum == CHECK_SUM ? " (Correct)" : " (INCORRECT)") << std::endl;
-        std::cout << "Elapsed time: " << elapsed_seconds.count() << " seconds" << std::endl;
+        auto sum = short(calculateChecksum(c, n));
+        std::cout << "type: " << "mpi (" << size << ")" << ", n: " << n << ", time: " << elapsed_seconds.count() << "s, checksum: " << sum << std::endl;
     } else {
-        handleMatrixPart(N);
+        handleMatrixPart(n);
     }
 
     MPI_Finalize();
 }
 
 int main(int argc, char* argv[]) {
-    if (argc > 1 && std::string(argv[1]) == "mpi") {
-        compute_mpi(argc, argv);
+    if (argc < 3) {
+        std::cerr << "Parameters: <n>, <seq, naive, omp, mpi>" << std::endl;
+        return 1;
+    }
+
+    int n = std::stoi(argv[1]);
+    std::string type = std::string(argv[2]);
+
+    if (std::log2(n) != int(std::log2(n))) {
+        std::cerr << "n must be a power of 2" << std::endl;
+        return 1;
+    }
+
+    auto* a = (float*) malloc(n * n * sizeof(float));
+    auto* b = (float*) malloc(n * n * sizeof(float));
+    auto* c = (float*) malloc(n * n * sizeof(float));
+
+    if (type == "mpi") {
+        compute_mpi(argc, argv, a, b, c, n);
     } else {
-        fillRandomly();
+        fillRandomly(a, b, c, n);
         auto start_time = std::chrono::system_clock::now();
 
-        if (argc > 1 && std::string(argv[1]) == "seq") {
-            compute_sequential();
-        } else if (argc > 1 && std::string(argv[1]) == "naive") {
-            mm_naive();
-        } else if (argc > 1 && std::string(argv[1]) == "omp") {
-            compute_openmp();
+        if (type == "seq") {
+            multiplyMatrix(a, b, c, n);
+        } else if (type == "naive") {
+            mm_naive(a, b, c, n);
+        } else if (type == "omp") {
+            compute_openmp(a, b, c, n);
         } else {
             std::cerr << "Specify type: seq, naive, omp, mpi" << std::endl;
             return 1;
@@ -205,11 +173,8 @@ int main(int argc, char* argv[]) {
         auto end_time = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end_time - start_time;
 
-        auto sum = short(calculateChecksum());
-        std::cout << "sum: " << sum << (sum == CHECK_SUM ? " (Correct)" : " (INCORRECT)") << std::endl;
-        std::cout << "Elapsed time: " << elapsed_seconds.count() << " seconds" << std::endl;
-
-//        printMatrix(&c[0][0], N, N);
+        auto sum = short(calculateChecksum(c, n));
+        std::cout << "type: " << type << ", n: " << n << ", time: " << elapsed_seconds.count() << "s, checksum: " << sum << std::endl;
     }
 
     /*
