@@ -5,10 +5,7 @@
 #include "mpi_mm.h"
 #include "mm.h"
 
-const double CHECK_SUM = 30786; // for N=2048
 std::seed_seq SEED{42};
-
-//const int THRESHOLD = 32768;
 const int BLOCK_SIZE = 32;
 
 void fillRandomly(float *a, float *b, float *c, int n) {
@@ -90,7 +87,7 @@ void compute_openmp(float *a, float *b, float *c, int n) {
     }
 }
 
-double calculateChecksum(float *c, int n) {
+double calculateChecksum(const float *c, int n) {
     double sum = 0;
 
     for (int i = 0; i < n * n; ++i) {
@@ -176,62 +173,6 @@ int main(int argc, char* argv[]) {
         auto sum = short(calculateChecksum(c, n));
         std::cout << "type: " << type << ", n: " << n << ", time: " << elapsed_seconds.count() << "s, checksum: " << sum << std::endl;
     }
-
-    /*
-     * seq
-     *
-     * 1024:32768
-     * sum: -32072 (Correct)
-     * Elapsed time: 5.10194 seconds
-     *
-     * 2048:32768
-     * sum: -12395 (Correct)
-     * Elapsed time: 40.8208 seconds
-     *
-     * 2048:32768:Palma
-     * sum: -12395 (Correct)
-     * Elapsed time: 42.1391 seconds
-     *
-     * #####
-     *
-     * naive
-     *
-     * 1024
-     * sum: -32072 (Correct)
-     * Elapsed time: 9.63945 seconds
-     *
-     * 2048
-     * sum: -12395 (Correct)
-     * Elapsed time: 280.025 seconds
-     *
-     * 2048:Palma
-     * sum: -12395 (Correct)
-     * Elapsed time: 172.37 seconds
-     *
-     * #####
-     *
-     * openmp
-     *
-     * 1024:64
-     * sum: -32072 (Correct)
-     * Elapsed time: 0.858777 seconds
-     *
-     * 2048:64
-     * sum: -12395 (Correct)
-     * Elapsed time: 27.167 seconds
-     *
-     * 2048:32
-     * sum: -12395 (Correct)
-     * Elapsed time: 27.1543 seconds
-     *
-     * 2048:128
-     * sum: -12395 (Correct)
-     * Elapsed time: 29.5544 seconds
-     *
-     * 2048:128:Palma:72
-     * sum: -12395 (Correct)
-     * Elapsed time: 7.78991 seconds
-     */
 
     return 0;
 }
