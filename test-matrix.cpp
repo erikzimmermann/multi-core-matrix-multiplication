@@ -4,16 +4,16 @@
 #include <random>
 #include "mpi_mm.h"
 
-const double CHECK_SUM = -12395;
+const double CHECK_SUM = 30786; // for N=2048
 std::seed_seq SEED{42};
-const int N = 16; // 2048
+const int N = 2048; // 2048
 
 const int THRESHOLD = 32768;
 const int BLOCK_SIZE = 32;
 
-double a[N][N];
-double b[N][N];
-double c[N][N];
+float a[N][N];
+float b[N][N];
+float c[N][N];
 
 void fillRandomly() {
     std::default_random_engine generator(SEED);
@@ -23,28 +23,32 @@ void fillRandomly() {
         for (int j = 0; j < N; ++j) {
             a[i][j] = distribution(generator);
             b[i][j] = distribution(generator);
+            c[i][j] = 0;
         }
     }
 }
 
-void printMatrix(double *m, int rows, int cols) {
+void printMatrix(float *m, int rows, int cols) {
+    int start_row = 0;
+    int start_col = 0;
+    int size = 16;
+
+    double sum = 0;
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
-            std::cout << *m << " ";
+            if (i >= start_row && i < start_row + size && j >= start_col && j < start_col + size) {
+                std::cout << *m << " ";
+                sum += *m;
+            }
             m++;
         }
-        std::cout << std::endl;
+        if (i >= start_row && i < start_row + size) std::cout << std::endl;
     }
+    std::cout << "Sum=" << sum << std::endl;
 }
 
 void mm_naive() {
-//    int check = N / 100;
-
     for (int i = 0; i < N; ++i) {
-//        if (i % check == 0) {
-//            std::cout << "it " << i << std::endl;
-//        }
-
         for (int j = 0; j < N; ++j) {
             for (int k = 0; k < N; ++k) {
                 // compute c matrix from a and b
@@ -60,7 +64,7 @@ void mm_sequential(int crow, int ccol,
                    int l, int m, int n) {
     int lhalf[3], mhalf[3], nhalf[3];
     int i, j, k;
-    double *aptr, *bptr, *cptr;
+    float *aptr, *bptr, *cptr;
 
     if (m * n > THRESHOLD) {
         lhalf[0] = 0; lhalf[1] = l/2; lhalf[2] = l - l/2;
@@ -102,9 +106,9 @@ void mm_openmp(int aRow, int bCol) {
 
     for (int i = 0; i < remaining; i++) {
         for (int j = 0; j < remaining; j++) {
-            double *cPtr = &c[aRow + i][bCol + j];
-            double *aPtr = &a[aRow + i][0];
-            double *bPtr = &b[0][bCol + j];
+            float *cPtr = &c[aRow + i][bCol + j];
+            float *aPtr = &a[aRow + i][0];
+            float *bPtr = &b[0][bCol + j];
 
             for (int k = 0; k < N; ++k) {
                 *cPtr += *(aPtr++) * *bPtr;
@@ -130,21 +134,12 @@ void compute_openmp() {
     }
 }
 
-void start_test(MPI_Comm instance) {
-    int num_procs, rank;
-    MPI_Comm_size(instance, &num_procs);
-    MPI_Comm_rank(instance, &rank);
-
-    // display process number and rank
-    std::cout << "" << rank << " of " << num_procs << std::endl;
-}
-
-short calculateChecksum() {
-    short sum = 0;
+double calculateChecksum() {
+    double sum = 0;
 
     for (auto &i: c) {
         for (auto &j: i) {
-            sum += j * 1000;  // ignore casting issues
+            sum += j;  // ignore casting issues
         }
     }
 
@@ -167,28 +162,21 @@ void compute_mpi(int argc, char* argv[]) {
 
     if (rank == 0) {
         fillRandomly();
-//        std::cout << "Matrix b" << std::endl;
-//        printMatrix(&b[0][0], N, N);
-//        std::cout << std::endl;
-//        std::cout << "Matrix a" << std::endl;
-//        printMatrix(&a[0][0], N, N);
-//        std::cout << std::endl;
-
-        auto start_time = std::chrono::system_clock::now();
 
         std::cout << "Distributing matrix" << std::endl;
         // distribute matrix by using the pointers to the matrices a and b
         distributeMatrix(&a[0][0], &b[0][0], N);
+
+        std::cout << "Waiting for result" << std::endl;
+        auto start_time = std::chrono::system_clock::now();
         collectMatrix(&c[0][0], N);
 
         auto end_time = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end_time - start_time;
 
-        short sum = calculateChecksum();
+        auto sum = short(calculateChecksum());
         std::cout << "sum: " << sum << (sum == CHECK_SUM ? " (Correct)" : " (INCORRECT)") << std::endl;
         std::cout << "Elapsed time: " << elapsed_seconds.count() << " seconds" << std::endl;
-
-        printMatrix(&c[0][0], N, N);
     } else {
         handleMatrixPart(N);
     }
@@ -217,11 +205,11 @@ int main(int argc, char* argv[]) {
         auto end_time = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end_time - start_time;
 
-        short sum = calculateChecksum();
+        auto sum = short(calculateChecksum());
         std::cout << "sum: " << sum << (sum == CHECK_SUM ? " (Correct)" : " (INCORRECT)") << std::endl;
         std::cout << "Elapsed time: " << elapsed_seconds.count() << " seconds" << std::endl;
 
-        printMatrix(&c[0][0], N, N);
+//        printMatrix(&c[0][0], N, N);
     }
 
     /*

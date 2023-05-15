@@ -3,11 +3,11 @@
 
 #include <mpi.h>
 
-void distributeMatrix(double *a, double *b, int N);
+void distributeMatrix(const float *a, const float *b, int N);
 
-void collectMatrix(double *c, int N);
+void collectMatrix(float *c, int N);
 
-void receiveMatrixPart(double *a, double *b, int block_size);
+void receiveMatrixPart(float *a, float *b, int block_size);
 
 void handleMatrixPart(int N);
 
