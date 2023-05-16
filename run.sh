@@ -1,11 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 
-for size in 64 128 256 512 1024 2048; do
-  for type in "naive" "seq" "omp" "mpi-5" "mpi-17"; do
-    echo "Running $size $type"
+runs=7
 
-    min=
-    for i in $(seq 1 10); do
+for type in "naive" "seq" "omp" "mpi-5" "mpi-17"; do
+  for size in 500 1000 1500 2000 2500 3000; do
+
+    times=()
+    for i in $(seq 1 $runs); do
+      echo "Running $size $type $i/$runs"
       if [ "$type" = "mpi-5" ]; then
         run=$(mpirun -np 5 --oversubscribe ./test-matrix $size mpi)
       elif [ "$type" = "mpi-17" ]; then
@@ -15,17 +17,20 @@ for size in 64 128 256 512 1024 2048; do
       fi
 
       run=$(echo "$run" | cut -d';' -f1)
-
-#      if [ -z "$min" ] || [ "$run" -lt "$min" ]; then
-#          min=$run
-#      fi
-
-      if [ -z "$min" ] || [ "$(echo "$run < $min" | bc -l)" -eq 1 ]; then
-          min=$run
-      fi
+      times+=("$run")
     done
 
-    echo "${type}: ${size}x${size}, Time: ${min}s" >> run.out
+    sorted_times=($(printf '%s\n' "${times[@]}" | sort -n))
+
+    sum=0
+    for (( i=1; i<(runs-1); i++ )); do
+      sum=$(echo "${sum} + ${sorted_times[i]}" | bc -l)
+    done
+
+    avg=$(echo "$sum / ($runs-2)" | bc -l)
+    avg=$(printf "%.*f" 4 "$avg")
+
+    echo "${type}: ${size}x${size}, Time: ${avg}s" >> run.out
   done
   echo "" >> run.out
 done
