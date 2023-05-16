@@ -6,7 +6,6 @@
 #include "mm.h"
 
 std::seed_seq SEED{42};
-const int BLOCK_SIZE = 32;
 
 void fillRandomly(float *a, float *b, float *c, int n) {
     std::default_random_engine generator(SEED);
@@ -55,8 +54,8 @@ void mm_naive(float *a, float *b, float *c, int n) {
     }
 }
 
-void mm_openmp(float *a, float *b, float *c, int n, int a_row, int b_col) {
-    int remaining = std::min(n - a_row, BLOCK_SIZE);
+void mm_openmp(float *a, float *b, float *c, int n, int a_row, int b_col, int block_size) {
+    int remaining = std::min(n - a_row, block_size);
 
     for (int i = 0; i < remaining; i++) {
         for (int j = 0; j < remaining; j++) {
@@ -73,15 +72,24 @@ void mm_openmp(float *a, float *b, float *c, int n, int a_row, int b_col) {
 }
 
 void compute_openmp(float *a, float *b, float *c, int n) {
-    int iter = std::ceil(float(n) / float(BLOCK_SIZE));
+    int block_size = 32;
+    if (n % block_size != 0) {
+        block_size = 25;
+        if (n % block_size != 0) {
+            std::cerr << "Invalid block size. n=" << n << ", block_size=" << block_size << std::endl;
+            return;
+        }
+    }
 
-    #pragma omp parallel default(none) shared(a, b, c, n, iter)
+    int iter = std::ceil(float(n) / float(block_size));
+
+    #pragma omp parallel default(none) shared(a, b, c, n, iter, block_size)
     #pragma omp single
     {
         for (int i = 0; i < iter; ++i) {
             for (int j = 0; j < iter; ++j) {
                 #pragma omp task
-                mm_openmp(a, b, c, n, i * BLOCK_SIZE, j * BLOCK_SIZE);
+                mm_openmp(a, b, c, n, i * block_size, j * block_size, block_size);
             }
         }
     }
@@ -97,7 +105,7 @@ double calculateChecksum(const float *c, int n) {
     return sum;
 }
 
-void compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n) {
+int compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n) {
     int rank, size;
 
     MPI_Init(&argc, &argv); // Initialize MPI environment
@@ -105,10 +113,16 @@ void compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n) {
     MPI_Comm_size(MPI_COMM_WORLD, &size); // Get the total number of processes
 
     int processes = size - 1;
-    if (log2(processes) != int(log2(processes)) || int(log2(processes)) % 2 != 0) {
-        if (rank == 0) std::cerr << "Number of processes must be: 4^x + 1" << std::endl;
+    if (log2(processes) != double(int(log2(processes))) || processes < 4) {
+        if (rank == 0) std::cerr << "The amount of processes must be a power of 2 and greater equals 4." << std::endl;
         MPI_Abort(MPI_COMM_WORLD, 1);
-        return;
+        return 1;
+    }
+
+    if (n % int(log2(processes)) != 0|| int(log2(processes)) % 2 != 0) {
+        if (rank == 0) std::cerr << "n and the amount of processes must be compliant so that result of n / log_2(processes - 1) is an integer." << std::endl;
+        MPI_Abort(MPI_COMM_WORLD, 1);
+        return 1;
     }
     
     if (rank == 0) {
@@ -130,6 +144,7 @@ void compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n) {
     }
 
     MPI_Finalize();
+    return 0;
 }
 
 int main(int argc, char* argv[]) {
@@ -141,17 +156,12 @@ int main(int argc, char* argv[]) {
     int n = std::stoi(argv[1]);
     std::string type = std::string(argv[2]);
 
-    if (std::log2(n) != int(std::log2(n))) {
-        std::cerr << "n must be a power of 2" << std::endl;
-        return 1;
-    }
-
     auto* a = (float*) malloc(n * n * sizeof(float));
     auto* b = (float*) malloc(n * n * sizeof(float));
     auto* c = (float*) malloc(n * n * sizeof(float));
 
     if (type == "mpi") {
-        compute_mpi(argc, argv, a, b, c, n);
+        return compute_mpi(argc, argv, a, b, c, n);
     } else {
         fillRandomly(a, b, c, n);
         auto start_time = std::chrono::system_clock::now();
