@@ -96,7 +96,7 @@ void computePart(float *a, float *b, float *c, int block_size) {
     multiplyMatrix(a, b, c, block_size);
 }
 
-void sendRowWise(float *b, int block_size) {
+MPI_Request sendRowWise(float *b, int block_size) {
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -107,10 +107,10 @@ void sendRowWise(float *b, int block_size) {
 
     MPI_Request request;
     MPI_Isend(b, block_size * block_size, MPI_FLOAT, next_process, 0, MPI_COMM_WORLD, &request);
-    MPI_Wait(&request, MPI_STATUS_IGNORE);
+    return request;
 }
 
-void receiveRowWise(float *b, int block_size) {
+MPI_Request receiveRowWise(float *b, int block_size) {
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -121,10 +121,10 @@ void receiveRowWise(float *b, int block_size) {
 
     MPI_Request request;
     MPI_Irecv(b, block_size * block_size, MPI_FLOAT, prev_process, 0, MPI_COMM_WORLD, &request);
-    MPI_Wait(&request, MPI_STATUS_IGNORE);
+    return request;
 }
 
-void sendColWise(float *a, int block_size) {
+MPI_Request sendColWise(float *a, int block_size) {
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -137,10 +137,10 @@ void sendColWise(float *a, int block_size) {
 
     MPI_Request request;
     MPI_Isend(a, block_size * block_size, MPI_FLOAT, next_process, 0, MPI_COMM_WORLD, &request);
-    MPI_Wait(&request, MPI_STATUS_IGNORE);
+    return request;
 }
 
-void receiveColWise(float *a, int block_size) {
+MPI_Request receiveColWise(float *a, int block_size) {
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -153,7 +153,7 @@ void receiveColWise(float *a, int block_size) {
 
     MPI_Request request;
     MPI_Irecv(a, block_size * block_size, MPI_FLOAT, prev_process, 0, MPI_COMM_WORLD, &request);
-    MPI_Wait(&request, MPI_STATUS_IGNORE);
+    return request;
 }
 
 void submitMatrixPart(float *c, int block_size) {
@@ -174,7 +174,8 @@ void handleMatrixPart(int N) {
     auto* a = (float*) malloc(block_size * block_size * sizeof(float));
     auto* b = (float*) malloc(block_size * block_size * sizeof(float));
     auto* c = (float*) malloc(block_size * block_size * sizeof(float));
-    auto* buffer = (float*) malloc(block_size * block_size * sizeof(float));
+    auto* buffer_a = (float*) malloc(block_size * block_size * sizeof(float));
+    auto* buffer_b = (float*) malloc(block_size * block_size * sizeof(float));
 
     // clear c matrix memory
     for (int row = 0; row < block_size; ++row) {
@@ -188,37 +189,24 @@ void handleMatrixPart(int N) {
     computePart(a, b, c, block_size);
 
     for (int i = 0; i < width - 1; ++i) {
-        if ((rank - 1) % 2 == 0) {
-            sendColWise(a, block_size);
-            receiveColWise(buffer, block_size);
+        MPI_Request send_col = sendColWise(a, block_size);
+        MPI_Request send_row = sendRowWise(b, block_size);
 
-            auto *temp = a;
-            a = buffer;
-            buffer = temp;
-        } else {
-            receiveColWise(buffer, block_size);
-            sendColWise(a, block_size);
+        MPI_Request recv_col = receiveColWise(buffer_a, block_size);
+        MPI_Request recv_row = receiveRowWise(buffer_b, block_size);
 
-            auto *temp = a;
-            a = buffer;
-            buffer = temp;
-        }
+        MPI_Wait(&send_col, MPI_STATUS_IGNORE);
+        MPI_Wait(&send_row, MPI_STATUS_IGNORE);
+        MPI_Wait(&recv_col, MPI_STATUS_IGNORE);
+        MPI_Wait(&recv_row, MPI_STATUS_IGNORE);
 
-        if (((rank - 1) / width) % 2 == 0) {
-            sendRowWise(b, block_size);
-            receiveRowWise(buffer, block_size);
+        auto *temp = a;
+        a = buffer_a;
+        buffer_a = temp;
 
-            auto *temp = b;
-            b = buffer;
-            buffer = temp;
-        } else {
-            receiveRowWise(buffer, block_size);
-            sendRowWise(b, block_size);
-
-            auto *temp = b;
-            b = buffer;
-            buffer = temp;
-        }
+        temp = b;
+        b = buffer_b;
+        buffer_b = temp;
 
         computePart(a, b, c, block_size);
     }
