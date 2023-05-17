@@ -8,7 +8,7 @@ void distributeMatrix(const float *a, const float *b, int N) {
     int processes;
     MPI_Comm_size(MPI_COMM_WORLD, &processes);
 
-    int width = int(log2(processes - 1));
+    int width = int(sqrt(processes - 1));
     if (width == 0) width = 1;
 
     int block_size = N / width;
@@ -53,7 +53,7 @@ void collectMatrix(float *c, int N) {
     int processes;
     MPI_Comm_size(MPI_COMM_WORLD, &processes);
 
-    int width = int(log2(processes - 1));
+    int width = int(sqrt(processes - 1));
     int block_size = width == 0 ? N : N / width;
 
     auto* buffer = (float*) malloc(block_size * block_size * sizeof(float));
@@ -101,7 +101,7 @@ MPI_Request sendRowWise(float *b, int block_size) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    int width = int(log2(size - 1));
+    int width = int(sqrt(size - 1));
     int next_process = rank + width;
     if (next_process >= size) next_process -= width * width;
 
@@ -115,7 +115,7 @@ MPI_Request receiveRowWise(float *b, int block_size) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    int width = int(log2(size - 1));
+    int width = int(sqrt(size - 1));
     int prev_process = rank - width;
     if (prev_process <= 0) prev_process += width * width;
 
@@ -129,7 +129,7 @@ MPI_Request sendColWise(float *a, int block_size) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    int width = int(log2(size - 1));
+    int width = int(sqrt(size - 1));
 
     int next_process;
     if ((rank - 1) % width == 0) next_process = rank + width - 1;
@@ -145,7 +145,7 @@ MPI_Request receiveColWise(float *a, int block_size) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    int width = int(log2(size - 1));
+    int width = int(sqrt(size - 1));
 
     int prev_process;
     if (rank % width == 0) prev_process = rank - width + 1;
@@ -168,7 +168,7 @@ void handleMatrixPart(int N) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    int width = int(log2(size - 1));
+    int width = int(sqrt(size - 1));
     int block_size = width == 0 ? N : N / width;
 
     auto* a = (float*) malloc(block_size * block_size * sizeof(float));

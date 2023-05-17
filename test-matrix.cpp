@@ -113,14 +113,14 @@ int compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n) {
     MPI_Comm_size(MPI_COMM_WORLD, &size); // Get the total number of processes
 
     int processes = size - 1;
-    if (log2(processes) != double(int(log2(processes))) || processes < 4) {
-        if (rank == 0) std::cerr << "The amount of processes must be a power of 2 and greater equals 4." << std::endl;
+    if (sqrt(processes) != double(int(sqrt(processes))) || processes < 5) {
+        if (rank == 0) std::cerr << "The number of processes must be the result of x*x+1 and greater equals 5." << std::endl;
         MPI_Abort(MPI_COMM_WORLD, 1);
         return 1;
     }
 
-    if (n % int(log2(processes)) != 0|| int(log2(processes)) % 2 != 0) {
-        if (rank == 0) std::cerr << "n and the amount of processes must be compliant so that result of n / log_2(processes - 1) is an integer." << std::endl;
+    if (n % int(sqrt(processes)) != 0|| int(sqrt(processes)) % 2 != 0) {
+        if (rank == 0) std::cerr << "n and the amount of processes must be compliant so that result of n / sqrt(processes - 1) is an integer." << std::endl;
         MPI_Abort(MPI_COMM_WORLD, 1);
         return 1;
     }
