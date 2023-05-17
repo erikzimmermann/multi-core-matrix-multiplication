@@ -1,4 +1,4 @@
-# matrix-multiplication-with-openmp
+# multi-core-matrix-multiplication
 
 Build c file: `mpic++ -fopenmp test-matrix.cpp mpi_mm.cpp mm.cpp -o test-matrix`  
 Run c file for MPI: `mpirun -np 17 ./test-matrix mpi`  
