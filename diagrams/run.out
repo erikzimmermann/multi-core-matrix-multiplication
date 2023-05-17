@@ -28,6 +28,16 @@ omp-4: 3500x3500, Time: 29.6172s
 omp-4: 4000x4000, Time: 43.9955s
 omp-4: 4500x4500, Time: 63.3926s
 
+omp-9: 504x504, Time: 0.0769s
+omp-9: 999x999, Time: 0.5057s
+omp-9: 1503x1503, Time: 1.5645s
+omp-9: 1998x1998, Time: 3.6734s
+omp-9: 2502x2502, Time: 7.3391s
+omp-9: 2997x2997, Time: 13.5106s
+omp-9: 3501x3501, Time: 21.9711s
+omp-9: 3996x3996, Time: 32.6951s
+omp-9: 4500x4500, Time: 46.8271s
+
 omp-16: 500x500, Time: 0.0417s
 omp-16: 1000x1000, Time: 0.2047s
 omp-16: 1500x1500, Time: 0.6954s
@@ -77,6 +87,16 @@ mpi-4: 3000x3000, Time: 18.8341s
 mpi-4: 3500x3500, Time: 29.7814s
 mpi-4: 4000x4000, Time: 44.1214s
 mpi-4: 4500x4500, Time: 62.8241s
+
+mpi-9: 504x504, Time: 0.0404s
+mpi-9: 999x999, Time: 0.3102s
+mpi-9: 1503x1503, Time: 1.0610s
+mpi-9: 1998x1998, Time: 2.4903s
+mpi-9: 2502x2502, Time: 4.9155s
+mpi-9: 2997x2997, Time: 8.3875s
+mpi-9: 3501x3501, Time: 13.2871s
+mpi-9: 3996x3996, Time: 19.6896s
+mpi-9: 4500x4500, Time: 28.5172s
 
 mpi-16: 500x500, Time: 0.0238s
 mpi-16: 1000x1000, Time: 0.1803s
