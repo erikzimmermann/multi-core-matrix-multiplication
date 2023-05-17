@@ -2,6 +2,7 @@
 #include <chrono>
 #include <mpi.h>
 #include <random>
+#include <omp.h>
 #include "mpi_mm.h"
 #include "mm.h"
 
@@ -45,7 +46,7 @@ void mm_naive(float *a, float *b, float *c, int n) {
             float *cptr = c + i * n + j;
             float *aptr = a + i * n;
             float *bptr = b + j;
-            
+
             for (int k = 0; k < n; ++k) {
                 *cptr += *(aptr++) * *bptr;
                 bptr += n;
@@ -71,7 +72,7 @@ void mm_openmp(float *a, float *b, float *c, int n, int a_row, int b_col, int bl
     }
 }
 
-void compute_openmp(float *a, float *b, float *c, int n) {
+void compute_openmp(float *a, float *b, float *c, int n, int threads) {
     int block_size = 32;
     if (n % block_size != 0) {
         block_size = 25;
@@ -80,6 +81,8 @@ void compute_openmp(float *a, float *b, float *c, int n) {
             return;
         }
     }
+
+    if (threads > 0) omp_set_num_threads(threads);
 
     int iter = std::ceil(float(n) / float(block_size));
 
@@ -101,7 +104,7 @@ double calculateChecksum(const float *c, int n) {
     for (int i = 0; i < n * n; ++i) {
         sum += *(c + i);
     }
-    
+
     return sum;
 }
 
@@ -124,7 +127,7 @@ int compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n) {
         MPI_Abort(MPI_COMM_WORLD, 1);
         return 1;
     }
-    
+
     if (rank == 0) {
         fillRandomly(a, b, c, n);
 
@@ -170,10 +173,14 @@ int main(int argc, char* argv[]) {
             multiplyMatrix(a, b, c, n);
         } else if (type == "naive") {
             mm_naive(a, b, c, n);
+        } else if (type == "omp-4") {
+            compute_openmp(a, b, c, n, 4);
+        } else if (type == "omp-8") {
+            compute_openmp(a, b, c, n, 8);
         } else if (type == "omp") {
-            compute_openmp(a, b, c, n);
+            compute_openmp(a, b, c, n, 0);
         } else {
-            std::cerr << "Specify type: seq, naive, omp, mpi" << std::endl;
+            std::cerr << "Specify type: seq, naive, omp, omp-4, omp-8, mpi" << std::endl;
             return 1;
         }
 
