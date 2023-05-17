@@ -119,7 +119,7 @@ int compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n) {
         return 1;
     }
 
-    if (n % int(sqrt(processes)) != 0|| int(sqrt(processes)) % 2 != 0) {
+    if (n % int(sqrt(processes)) != 0) {
         if (rank == 0) std::cerr << "n and the amount of processes must be compliant so that result of n / sqrt(processes - 1) is an integer." << std::endl;
         MPI_Abort(MPI_COMM_WORLD, 1);
         return 1;
