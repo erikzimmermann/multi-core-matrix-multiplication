@@ -174,8 +174,8 @@ int main(int argc, char* argv[]) {
             multiplyMatrix(a, b, c, n);
         } else if (type == "naive") {
             mm_naive(a, b, c, n);
-        } else if (type == "omp-16") {
-            compute_openmp(a, b, c, n, 16);
+        } else if (type == "omp-18") {
+            compute_openmp(a, b, c, n, 18);
         } else if (type == "omp") {
             compute_openmp(a, b, c, n, 0);
         } else {
