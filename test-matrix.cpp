@@ -174,10 +174,18 @@ int main(int argc, char* argv[]) {
             multiplyMatrix(a, b, c, n);
         } else if (type == "naive") {
             mm_naive(a, b, c, n);
-        } else if (type == "omp-18") {
-            compute_openmp(a, b, c, n, 18);
-        } else if (type == "omp") {
-            compute_openmp(a, b, c, n, 0);
+        } else if (type.compare(0, 3, "omp") == 0) {
+            if (type.length() > 3) {
+                size_t dashPos = type.find('-');
+                if (dashPos != std::string::npos) {
+                    std::string numStr = type.substr(dashPos + 1);
+                    int threads = std::stoi(numStr);
+                    compute_openmp(a, b, c, n, threads);
+                } else {
+                    std::cerr << "Specify type: omp or omp-<threads>" << std::endl;
+                    return 1;
+                }
+            } else compute_openmp(a, b, c, n, 0);
         } else {
             std::cerr << "Specify type: seq, naive, omp, omp-4, omp-8, mpi" << std::endl;
             return 1;
