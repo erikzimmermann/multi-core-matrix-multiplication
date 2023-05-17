@@ -83,6 +83,7 @@ void compute_openmp(float *a, float *b, float *c, int n, int threads) {
     }
 
     if (threads > 0) omp_set_num_threads(threads);
+    else omp_set_num_threads(omp_get_max_threads());
 
     int iter = std::ceil(float(n) / float(block_size));
 
@@ -173,10 +174,8 @@ int main(int argc, char* argv[]) {
             multiplyMatrix(a, b, c, n);
         } else if (type == "naive") {
             mm_naive(a, b, c, n);
-        } else if (type == "omp-4") {
-            compute_openmp(a, b, c, n, 4);
-        } else if (type == "omp-8") {
-            compute_openmp(a, b, c, n, 8);
+        } else if (type == "omp-16") {
+            compute_openmp(a, b, c, n, 16);
         } else if (type == "omp") {
             compute_openmp(a, b, c, n, 0);
         } else {

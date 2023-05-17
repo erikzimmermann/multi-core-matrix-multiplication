@@ -2,8 +2,8 @@
 
 runs=7
 
-for type in "naive" "seq" "omp" "mpi-5" "mpi-17"; do
-  for size in 500 1000 1500 2000 2500 3000; do
+for type in "naive" "seq" "omp-16" "omp" "mpi-5" "mpi-17"; do
+  for size in 500 1000 1500 2000 2500 3000 3500 4000 4500; do
 
     times=()
     for i in $(seq 1 $runs); do
