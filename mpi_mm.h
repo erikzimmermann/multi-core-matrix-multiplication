@@ -1,5 +1,5 @@
-#ifndef MATRIX_MULTIPLICATION_WITH_OPENMP_MPI_MM_H
-#define MATRIX_MULTIPLICATION_WITH_OPENMP_MPI_MM_H
+#ifndef MULTI_CORE_MATRIX_MULTIPLICATION_MPI_MM_H
+#define MULTI_CORE_MATRIX_MULTIPLICATION_MPI_MM_H
 
 #include <mpi.h>
 
@@ -12,4 +12,4 @@ void receiveMatrixPart(float *a, float *b, int block_size);
 void handleMatrixPart(int N);
 
 
-#endif //MATRIX_MULTIPLICATION_WITH_OPENMP_MPI_MM_H
+#endif //MULTI_CORE_MATRIX_MULTIPLICATION_MPI_MM_H

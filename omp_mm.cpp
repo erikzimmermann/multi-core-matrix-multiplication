@@ -10,12 +10,12 @@ void multiplyMatrixOMP(float *a, float *b, float *c,
     int i, j, k;
     float *aptr, *bptr, *cptr;
 
-    if (m * n > THRESHOLD) {
+    if (m * n > 32768) {
         lhalf[0] = 0; lhalf[1] = l/2; lhalf[2] = l - l/2;
         mhalf[0] = 0; mhalf[1] = m/2; mhalf[2] = l - m/2;
         nhalf[0] = 0; nhalf[1] = n/2; nhalf[2] = l - n/2;
 
-        #pragma omp parallel default(none) shared(a, b, c, n, crow, ccol, arow, acol, brow, bcol, lhalf, mhalf, nhalf, N)
+        #pragma omp parallel default(shared)
         #pragma omp single
         {
             for (i = 0; i < 2; i++) {

@@ -3,9 +3,9 @@
 #include <mpi.h>
 #include <random>
 #include <omp.h>
+#include "mm.h"
 #include "mpi_mm.h"
 #include "omp_mm.h"
-#include "mm.h"
 
 std::seed_seq SEED{42};
 
