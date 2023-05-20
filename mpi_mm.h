@@ -9,7 +9,7 @@ void collectMatrix(float *c, int N);
 
 void receiveMatrixPart(float *a, float *b, int block_size);
 
-void handleMatrixPart(int N);
+void handleMatrixPart(int N, bool open_mp);
 
 
 #endif //MULTI_CORE_MATRIX_MULTIPLICATION_MPI_MM_H
