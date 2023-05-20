@@ -2,7 +2,7 @@
 #include <mpi.h>
 #include <random>
 #include <iostream>
-#include "mm.h"
+#include "omp_mm.h"
 
 void distributeMatrix(const float *a, const float *b, int N) {
     int processes;
@@ -93,7 +93,7 @@ void computePart(float *a, float *b, float *c, int block_size) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    multiplyMatrix(a, b, c, block_size);
+    multiplyMatrixOMP(a, b, c, block_size);
 }
 
 MPI_Request sendRowWise(float *b, int block_size) {
