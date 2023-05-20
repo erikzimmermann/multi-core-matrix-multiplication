@@ -2,26 +2,20 @@
 
 runs=7
 
-for type in "mpi-64" "mpi-49" "mpi-36" "omp-36" "mpi-25" "omp-25" "mpi-16" "omp-16" "mpi-9" "omp-9" "mpi-4" "omp-4"; do
+for type in "mpi-4" "mpi-64" "mpi-49" "mpi-36" "omp-36" "mpi-25" "omp-25" "mpi-16" "omp-16" "mpi-9" "omp-9" "mpi-4" "omp-4"; do
   for size in 500 1000 1500 2000 2500 3000 3500 4000 4500; do
 
     times=()
     for i in $(seq 1 $runs); do
       echo "Running $size $type $i/$runs"
-      if [ "$type" = "mpi-4" ]; then
-        run=$(mpirun -np 5 --oversubscribe ./test-matrix $size mpi)
-      elif [ "$type" = "mpi-9" ]; then
-        run=$(mpirun -np 10 --oversubscribe ./test-matrix $size mpi)
-      elif [ "$type" = "mpi-16" ]; then
-        run=$(mpirun -np 17 --oversubscribe ./test-matrix $size mpi)
-      elif [ "$type" = "mpi-25" ]; then
-        run=$(mpirun -np 26 --oversubscribe ./test-matrix $size mpi)
-      elif [ "$type" = "mpi-36" ]; then
-        run=$(mpirun -np 37 --oversubscribe ./test-matrix $size mpi)
-      elif [ "$type" = "mpi-49" ]; then
-        run=$(mpirun -np 50 --oversubscribe ./test-matrix $size mpi)
-      elif [ "$type" = "mpi-64" ]; then
-        run=$(mpirun -np 65 --oversubscribe ./test-matrix $size mpi)
+      if [[ "$type" == mpi-* ]]; then
+        num_procs=${type#mpi-}
+        num_procs=$((num_procs + 1))
+        run=$(mpirun -np $num_procs --oversubscribe ./test-matrix $size mpi)
+      elif [[ "$type" == mpiomp-* ]]; then
+        num_procs=${type#mpiomp-}
+        num_procs=$((num_procs + 1))
+        run=$(mpirun -np $num_procs --oversubscribe ./test-matrix $size mpiomp)
       else
         run=$(./test-matrix $size $type)
       fi

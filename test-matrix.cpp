@@ -56,50 +56,8 @@ void mm_naive(float *a, float *b, float *c, int n) {
     }
 }
 
-void mm_openmp(float *a, float *b, float *c, int n, int a_row, int b_col, int block_size) {
-    int remaining = std::min(n - a_row, block_size);
-
-    for (int i = 0; i < remaining; i++) {
-        for (int j = 0; j < remaining; j++) {
-            float *cPtr = c + (a_row + i) * n + b_col + j;
-            float *aPtr = a + (a_row + i) * n;
-            float *bPtr = b + b_col + j;
-
-            for (int k = 0; k < n; ++k) {
-                *cPtr += *(aPtr++) * *bPtr;
-                bPtr += n;
-            }
-        }
-    }
-}
-
 void compute_openmp(float *a, float *b, float *c, int n, int threads) {
-    if (threads > 0) omp_set_num_threads(threads);
-    else omp_set_num_threads(omp_get_max_threads());
-
-    multiplyMatrixOMP(a, b, c, n);
-
-//    int block_size = 32;
-//    if (n % block_size != 0) {
-//        block_size = 25;
-//        if (n % block_size != 0) {
-//            std::cerr << "Invalid block size. n=" << n << ", block_size=" << block_size << std::endl;
-//            return;
-//        }
-//    }
-//
-//    int iter = std::ceil(float(n) / float(block_size));
-//
-//    #pragma omp parallel default(none) shared(a, b, c, n, iter, block_size)
-//    #pragma omp single
-//    {
-//        for (int i = 0; i < iter; ++i) {
-//            for (int j = 0; j < iter; ++j) {
-//                #pragma omp task
-//                mm_openmp(a, b, c, n, i * block_size, j * block_size, block_size);
-//            }
-//        }
-//    }
+    multiplyMatrixOMP(a, b, c, n, threads);
 }
 
 double calculateChecksum(const float *c, int n) {
@@ -112,7 +70,7 @@ double calculateChecksum(const float *c, int n) {
     return sum;
 }
 
-int compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n) {
+int compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n, bool open_mp) {
     int rank, size;
 
     MPI_Init(&argc, &argv); // Initialize MPI environment
@@ -120,8 +78,8 @@ int compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n) {
     MPI_Comm_size(MPI_COMM_WORLD, &size); // Get the total number of processes
 
     int processes = size - 1;
-    if (sqrt(processes) != double(int(sqrt(processes))) || processes < 5) {
-        if (rank == 0) std::cerr << "The number of processes must be the result of x*x+1 and greater equals 5." << std::endl;
+    if (sqrt(processes) - double(int(sqrt(processes))) > 0.1 || size < 5) {
+        if (rank == 0) std::cerr << "The number of processes (" << processes << ", " << size << ") must be the result of x*x+1 and greater equals 5." << std::endl;
         MPI_Abort(MPI_COMM_WORLD, 1);
         return 1;
     }
@@ -135,10 +93,8 @@ int compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n) {
     if (rank == 0) {
         fillRandomly(a, b, c, n);
 
-        // distribute matrix by using the pointers to the matrices a and b
-        distributeMatrix(a, b, n);
-
         auto start_time = std::chrono::system_clock::now();
+        distributeMatrix(a, b, n);
         collectMatrix(c, n);
 
         auto end_time = std::chrono::system_clock::now();
@@ -147,7 +103,7 @@ int compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n) {
         auto sum = short(calculateChecksum(c, n));
         std::cout << elapsed_seconds.count() << "; checksum: " << sum << std::endl;
     } else {
-        handleMatrixPart(n);
+        handleMatrixPart(n, open_mp);
     }
 
     MPI_Finalize();
@@ -168,7 +124,9 @@ int main(int argc, char* argv[]) {
     auto* c = (float*) malloc(n * n * sizeof(float));
 
     if (type == "mpi") {
-        return compute_mpi(argc, argv, a, b, c, n);
+        return compute_mpi(argc, argv, a, b, c, n, false);
+    } else if (type == "mpiomp") {
+        return compute_mpi(argc, argv, a, b, c, n, true);
     } else {
         fillRandomly(a, b, c, n);
         auto start_time = std::chrono::system_clock::now();
