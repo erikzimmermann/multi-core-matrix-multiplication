@@ -2,16 +2,26 @@
 
 runs=7
 
-for type in "naive" "seq" "omp-16" "omp" "mpi-5" "mpi-17"; do
+for type in "omp-4" "omp-9" "omp-16" "omp-25" "omp-36" "mpi-4" "mpi-9" "mpi-16" "mpi-25" "mpi-36" "mpi-49" "mpi-64"; do
   for size in 500 1000 1500 2000 2500 3000 3500 4000 4500; do
 
     times=()
     for i in $(seq 1 $runs); do
       echo "Running $size $type $i/$runs"
-      if [ "$type" = "mpi-5" ]; then
+      if [ "$type" = "mpi-4" ]; then
         run=$(mpirun -np 5 --oversubscribe ./test-matrix $size mpi)
-      elif [ "$type" = "mpi-17" ]; then
+      elif [ "$type" = "mpi-9" ]; then
+        run=$(mpirun -np 10 --oversubscribe ./test-matrix $size mpi)
+      elif [ "$type" = "mpi-16" ]; then
         run=$(mpirun -np 17 --oversubscribe ./test-matrix $size mpi)
+      elif [ "$type" = "mpi-25" ]; then
+        run=$(mpirun -np 26 --oversubscribe ./test-matrix $size mpi)
+      elif [ "$type" = "mpi-36" ]; then
+        run=$(mpirun -np 37 --oversubscribe ./test-matrix $size mpi)
+      elif [ "$type" = "mpi-49" ]; then
+        run=$(mpirun -np 50 --oversubscribe ./test-matrix $size mpi)
+      elif [ "$type" = "mpi-64" ]; then
+        run=$(mpirun -np 65 --oversubscribe ./test-matrix $size mpi)
       else
         run=$(./test-matrix $size $type)
       fi
