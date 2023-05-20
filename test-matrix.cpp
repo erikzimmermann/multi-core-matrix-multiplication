@@ -4,6 +4,7 @@
 #include <random>
 #include <omp.h>
 #include "mpi_mm.h"
+#include "omp_mm.h"
 #include "mm.h"
 
 std::seed_seq SEED{42};
@@ -73,30 +74,32 @@ void mm_openmp(float *a, float *b, float *c, int n, int a_row, int b_col, int bl
 }
 
 void compute_openmp(float *a, float *b, float *c, int n, int threads) {
-    int block_size = 32;
-    if (n % block_size != 0) {
-        block_size = 25;
-        if (n % block_size != 0) {
-            std::cerr << "Invalid block size. n=" << n << ", block_size=" << block_size << std::endl;
-            return;
-        }
-    }
-
     if (threads > 0) omp_set_num_threads(threads);
     else omp_set_num_threads(omp_get_max_threads());
 
-    int iter = std::ceil(float(n) / float(block_size));
+    multiplyMatrixOMP(a, b, c, n);
 
-    #pragma omp parallel default(none) shared(a, b, c, n, iter, block_size)
-    #pragma omp single
-    {
-        for (int i = 0; i < iter; ++i) {
-            for (int j = 0; j < iter; ++j) {
-                #pragma omp task
-                mm_openmp(a, b, c, n, i * block_size, j * block_size, block_size);
-            }
-        }
-    }
+//    int block_size = 32;
+//    if (n % block_size != 0) {
+//        block_size = 25;
+//        if (n % block_size != 0) {
+//            std::cerr << "Invalid block size. n=" << n << ", block_size=" << block_size << std::endl;
+//            return;
+//        }
+//    }
+//
+//    int iter = std::ceil(float(n) / float(block_size));
+//
+//    #pragma omp parallel default(none) shared(a, b, c, n, iter, block_size)
+//    #pragma omp single
+//    {
+//        for (int i = 0; i < iter; ++i) {
+//            for (int j = 0; j < iter; ++j) {
+//                #pragma omp task
+//                mm_openmp(a, b, c, n, i * block_size, j * block_size, block_size);
+//            }
+//        }
+//    }
 }
 
 double calculateChecksum(const float *c, int n) {
