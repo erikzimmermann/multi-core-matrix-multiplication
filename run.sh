@@ -2,7 +2,7 @@
 
 runs=7
 
-for type in "omp-4" "omp-9" "omp-16" "omp-25" "omp-36" "mpi-4" "mpi-9" "mpi-16" "mpi-25" "mpi-36" "mpi-49" "mpi-64"; do
+for type in "mpi-64" "mpi-49" "mpi-36" "omp-36" "mpi-25" "omp-25" "mpi-16" "omp-16" "mpi-9" "omp-9" "mpi-4" "omp-4"; do
   for size in 500 1000 1500 2000 2500 3000 3500 4000 4500; do
 
     times=()
