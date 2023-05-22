@@ -15,7 +15,7 @@ void distributeMatrix(const float *a, const float *b, int N) {
     int block_size = N / width;
     int cell = width - 1;
 
-    MPI_Request* requests = new MPI_Request[(processes - 1) * 2];
+    auto* requests = new MPI_Request[(processes - 1) * 2];
     for (int i = 0; i < processes - 1; ++i) {
         // compute cell index for multiplying the matrix block-wise
         if (i % width != 0) {
@@ -65,7 +65,7 @@ void collectMatrix(float *c, int N) {
     int block_size = width == 0 ? N : N / width;
 
     float* buffer[processes - 1];
-    MPI_Request* requests = new MPI_Request[processes - 1];
+    auto* requests = new MPI_Request[processes - 1];
 
     for (int i = 0; i < processes - 1; ++i) {
         // source must be i + 1 because 0 is the main process
