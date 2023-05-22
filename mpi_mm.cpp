@@ -13,15 +13,17 @@ void distributeMatrix(const float *a, const float *b, int N) {
     if (width == 0) width = 1;
 
     int block_size = N / width;
-    int cell = width - 1;
+//    int cell = width - 1;
 
     auto* requests = new MPI_Request[(processes - 1) * 2];
     for (int i = 0; i < processes - 1; ++i) {
         // compute cell index for multiplying the matrix block-wise
-        if (i % width != 0) {
-            cell++;
-            if (cell == width) cell = 0;
-        }
+        int cell = (i % width + (i / width)) % width;
+
+//        if (i % width != 0) {
+//            cell++;
+//            if (cell == width) cell = 0;
+//        }
 
         // build buffer with square matrix part A
         float buffer_a[block_size][block_size];
