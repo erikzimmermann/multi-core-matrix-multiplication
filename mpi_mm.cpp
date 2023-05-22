@@ -13,14 +13,9 @@ void distributeMatrix(const float *a, const float *b, int N) {
     if (width == 0) width = 1;
 
     int block_size = N / width;
-    int cell = width - 1;
-
     for (int i = 0; i < processes - 1; ++i) {
         // compute cell index for multiplying the matrix block-wise
-        if (i % width != 0) {
-            cell++;
-            if (cell == width) cell = 0;
-        }
+        int cell = (i % width + (i / width)) % width;
 
         // build buffer with square matrix part A
         float buffer_a[block_size][block_size];
@@ -120,8 +115,8 @@ MPI_Request sendRowWise(float *b, int block_size) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     int width = int(sqrt(size - 1));
-    int next_process = rank + width;
-    if (next_process >= size) next_process -= width * width;
+    int next_process = rank - width;
+    if (next_process <= 0) next_process += width * width;
 
     MPI_Request request;
     MPI_Isend(b, block_size * block_size, MPI_FLOAT, next_process, 0, MPI_COMM_WORLD, &request);
@@ -134,11 +129,11 @@ MPI_Request receiveRowWise(float *b, int block_size) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     int width = int(sqrt(size - 1));
-    int prev_process = rank - width;
-    if (prev_process <= 0) prev_process += width * width;
+    int next_process = rank + width;
+    if (next_process >= size) next_process -= width * width;
 
     MPI_Request request;
-    MPI_Irecv(b, block_size * block_size, MPI_FLOAT, prev_process, 0, MPI_COMM_WORLD, &request);
+    MPI_Irecv(b, block_size * block_size, MPI_FLOAT, next_process, 0, MPI_COMM_WORLD, &request);
     return request;
 }
 
