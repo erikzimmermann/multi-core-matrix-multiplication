@@ -114,7 +114,7 @@ void receiveMatrixPart(float *a, float *b, int block_size) {
 }
 
 void computePart(float *a, float *b, float *c, int block_size, bool open_mp) {
-    if (open_mp) multiplyMatrixOMP(a, b, c, block_size, 2);
+    if (open_mp) multiplyMatrixOMP(a, b, c, block_size, 2, 0);
     else multiplyMatrix(a, b, c, block_size);
 }
 

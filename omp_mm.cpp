@@ -94,10 +94,10 @@ void multiplyMatrixOMP2(float *a, float *b, float *c, int n) {
     }
 }
 
-void multiplyMatrixOMP(float *a, float *b, float *c, int n, int threads) {
+void multiplyMatrixOMP(float *a, float *b, float *c, int n, int threads, int approach) {
     if (threads > 0) omp_set_num_threads(threads);
     else omp_set_num_threads(omp_get_max_threads());
 
-    multiplyMatrixOMP(a, b, c, 0, 0, 0, 0, 0, 0, n, n, n, n);
-//    multiplyMatrixOMP2(a, b, c, n);
+    if (approach == 0) multiplyMatrixOMP(a, b, c, 0, 0, 0, 0, 0, 0, n, n, n, n);
+    else multiplyMatrixOMP2(a, b, c, n);
 }

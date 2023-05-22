@@ -54,7 +54,7 @@ void mm_naive(float *a, float *b, float *c, int n) {
 }
 
 void compute_openmp(float *a, float *b, float *c, int n, int threads) {
-    multiplyMatrixOMP(a, b, c, n, threads);
+    multiplyMatrixOMP(a, b, c, n, threads, 1);
 }
 
 double calculateChecksum(const float *c, int n) {
