@@ -13,17 +13,14 @@ void distributeMatrix(const float *a, const float *b, int N) {
     if (width == 0) width = 1;
 
     int block_size = N / width;
-//    int cell = width - 1;
+    int cell = width - 1;
 
-    auto* requests = new MPI_Request[(processes - 1) * 2];
     for (int i = 0; i < processes - 1; ++i) {
         // compute cell index for multiplying the matrix block-wise
-        int cell = (i % width + (i / width)) % width;
-
-//        if (i % width != 0) {
-//            cell++;
-//            if (cell == width) cell = 0;
-//        }
+        if (i % width != 0) {
+            cell++;
+            if (cell == width) cell = 0;
+        }
 
         // build buffer with square matrix part A
         float buffer_a[block_size][block_size];
@@ -37,7 +34,8 @@ void distributeMatrix(const float *a, const float *b, int N) {
         }
 
         // i+1 since main process is 0 ;tag=0 for matrix a
-        MPI_Isend(&buffer_a[0][0], block_size * block_size, MPI_FLOAT, i + 1, 0, MPI_COMM_WORLD, &requests[i * 2]);
+        MPI_Request req_a;
+        MPI_Isend(&buffer_a[0][0], block_size * block_size, MPI_FLOAT, i + 1, 0, MPI_COMM_WORLD, &req_a);
 
         // build buffer with square matrix part B
         float buffer_b[block_size][block_size];
@@ -51,11 +49,11 @@ void distributeMatrix(const float *a, const float *b, int N) {
         }
 
         // i+1 since main process is 0 ;tag=1 for matrix b
-        MPI_Isend(&buffer_b[0][0], block_size * block_size, MPI_FLOAT, i + 1, 1, MPI_COMM_WORLD, &requests[i * 2 + 1]);
-    }
+        MPI_Request req_b;
+        MPI_Isend(&buffer_b[0][0], block_size * block_size, MPI_FLOAT, i + 1, 1, MPI_COMM_WORLD, &req_b);
 
-    for (int i = 0; i < (processes - 1) * 2; i++) {
-        MPI_Wait(&requests[i], MPI_STATUS_IGNORE);
+        MPI_Wait(&req_a, MPI_STATUS_IGNORE);
+        MPI_Wait(&req_b, MPI_STATUS_IGNORE);
     }
 }
 
