@@ -99,6 +99,8 @@ int compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n, boo
 
         auto sum = short(calculateChecksum(c, n));
         std::cout << elapsed_seconds.count() << "; checksum: " << sum << std::endl;
+
+//        printMatrix(c, n, n);
     } else {
         handleMatrixPart(n, open_mp);
     }
@@ -154,6 +156,8 @@ int main(int argc, char* argv[]) {
 
         auto sum = short(calculateChecksum(c, n));
         std::cout << elapsed_seconds.count() << "; checksum: " << sum << std::endl;
+
+//        printMatrix(c, n, n);
     }
 
     return 0;
