@@ -1,11 +1,10 @@
 #include <iostream>
 #include <chrono>
 #include <mpi.h>
-#include <random>
-#include <omp.h>
 #include "mm.h"
 #include "mpi_mm.h"
 #include "omp_mm.h"
+#include <random>
 
 std::seed_seq SEED{42};
 
@@ -13,12 +12,10 @@ void fillRandomly(float *a, float *b, float *c, int n) {
     std::default_random_engine generator(SEED);
     std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            *(a + i * n + j) = distribution(generator);
-            *(b + i * n + j) = distribution(generator);
-            *(c + i * n + j) = 0;
-        }
+    for (int i = 0; i < n * n; i++) {
+        *(a + i) = distribution(generator);
+        *(b + i) = distribution(generator);
+        *(c + i) = 0;  // clear matrix c
     }
 }
 
