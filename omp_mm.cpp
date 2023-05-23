@@ -3,7 +3,7 @@
 #include <iostream>
 #include <math.h>
 
-void multiplyMatrixOMP(float *a, float *b, float *c,
+void multiplyMatrixBlock(float *a, float *b, float *c,
                        int crow, int ccol,
                        int arow, int acol,
                        int brow, int bcol,
@@ -18,7 +18,7 @@ void multiplyMatrixOMP(float *a, float *b, float *c,
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
                 for (int k = 0; k < 2; k++) {
-                    multiplyMatrixOMP(a, b, c,
+                    multiplyMatrixBlock(a, b, c,
                                       crow + lhalf[i], ccol + mhalf[j],
                                       arow + lhalf[i], acol + mhalf[k],
                                       brow + mhalf[k], bcol + nhalf[j],
@@ -70,7 +70,7 @@ void multiplyMatrixPart(float *a, float *b, float *c, int n, int a_row, int b_co
     }
 }
 
-void multiplyMatrixOMP2(float *a, float *b, float *c, int n) {
+void multiplyMatrixCannon(float *a, float *b, float *c, int n) {
     int block_size = 32;
     if (n % block_size != 0) {
         block_size = 25;
@@ -94,10 +94,10 @@ void multiplyMatrixOMP2(float *a, float *b, float *c, int n) {
     }
 }
 
-void multiplyMatrixOMP(float *a, float *b, float *c, int n, int threads, int approach) {
+void multiplyMatrixOMP(float *a, float *b, float *c, int n, int threads) {
     if (threads > 0) omp_set_num_threads(threads);
     else omp_set_num_threads(omp_get_max_threads());
 
-    if (approach == 0) multiplyMatrixOMP(a, b, c, 0, 0, 0, 0, 0, 0, n, n, n, n);
-    else multiplyMatrixOMP2(a, b, c, n);
+//    multiplyMatrixBlock(a, b, c, 0, 0, 0, 0, 0, 0, n, n, n, n);
+    multiplyMatrixCannon(a, b, c, n);
 }
