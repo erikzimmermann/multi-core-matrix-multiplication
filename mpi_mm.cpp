@@ -88,7 +88,7 @@ void collectMatrix(float *c, int N) {
     }
 }
 
-void receiveMatrixPart(float *a, float *b, int block_size) {
+void receiveMatrixParts(float *a, float *b, int block_size) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -198,7 +198,7 @@ void handleMatrixPart(int N, bool open_mp) {
         }
     }
 
-    receiveMatrixPart(a, b, block_size);
+    receiveMatrixParts(a, b, block_size);
     computePart(a, b, c, block_size, open_mp);
 
     for (int i = 0; i < width - 1; ++i) {

@@ -7,8 +7,6 @@ void distributeMatrix(const float *a, const float *b, int N);
 
 void collectMatrix(float *c, int N);
 
-void receiveMatrixPart(float *a, float *b, int block_size);
-
 void handleMatrixPart(int N, bool open_mp);
 
 
