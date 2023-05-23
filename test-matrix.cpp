@@ -91,8 +91,7 @@ int compute_mpi(int argc, char* argv[], float *a, float *b, float *c, int n, boo
         fillRandomly(a, b, c, n);
 
         auto start_time = std::chrono::system_clock::now();
-        distributeMatrix(a, b, n);
-        collectMatrix(c, n);
+        multiplyMatrixMPI(a, b, c, n);
 
         auto end_time = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end_time - start_time;

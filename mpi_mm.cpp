@@ -88,6 +88,11 @@ void collectMatrix(float *c, int N) {
     }
 }
 
+void multiplyMatrixMPI(const float *a, const float *b, float *c, int N) {
+    distributeMatrix(a, b, N);
+    collectMatrix(c, N);
+}
+
 void receiveMatrixParts(float *a, float *b, int block_size) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
