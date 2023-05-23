@@ -2,9 +2,9 @@
 #include <omp.h>
 #include <math.h>
 
-const int block_size = 32;
+//const int block_size = 32;
 
-void multiplyMatrixPart(float *a, float *b, float *c, int n, int a_row, int b_col) {
+void multiplyMatrixPart(float *a, float *b, float *c, int n, int a_row, int b_col, int block_size) {
     int row_remaining = std::min(n - a_row, block_size);
     int col_remaining = std::min(n - b_col, block_size);
 
@@ -22,13 +22,13 @@ void multiplyMatrixPart(float *a, float *b, float *c, int n, int a_row, int b_co
     }
 }
 
-void multiplyMatrixCannon(float *a, float *b, float *c, int n) {
+void multiplyMatrixCannon(float *a, float *b, float *c, int n, int block_size) {
     int iter = (n + block_size - 1) / block_size;
 
     #pragma omp parallel for collapse(2)
     for (int i = 0; i < iter; i++) {
         for (int j = 0; j < iter; j++) {
-            multiplyMatrixPart(a, b, c, n, i * block_size, j * block_size);
+            multiplyMatrixPart(a, b, c, n, i * block_size, j * block_size, block_size);
         }
     }
 }
@@ -37,5 +37,9 @@ void multiplyMatrixOMP(float *a, float *b, float *c, int n, int threads) {
     if (threads > 0) omp_set_num_threads(threads);
     else omp_set_num_threads(omp_get_max_threads());
 
-    multiplyMatrixCannon(a, b, c, n);
+    auto sizes = new int[10] { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
+
+    for (int i = 0; i < 10; ++i) {
+        multiplyMatrixCannon(a, b, c, n, sizes[i]);
+    }
 }
