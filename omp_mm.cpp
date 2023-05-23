@@ -24,8 +24,8 @@ void multiplyMatrixCannon(float *a, float *b, float *c, int block_size, int n) {
     int iter = (n + block_size - 1) / block_size;
 
     #pragma omp parallel for collapse(2)
-    for (int i = 0; i < iter; ++i) {
-        for (int j = 0; j < iter; ++j) {
+    for (int i = 0; i < iter; i++) {
+        for (int j = 0; j < iter; j++) {
             multiplyMatrixPart(a, b, c, n, i * block_size, j * block_size, block_size);
         }
     }
