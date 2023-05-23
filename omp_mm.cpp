@@ -70,8 +70,8 @@ void multiplyMatrixOMP(float *a, float *b, float *c, int n, int threads) {
     auto sizes = new int[8] { 1, 2, 4, 8, 16, 32, 64, 128 };
 
     for (int i = 0; i < 8; ++i) {
-        auto timings = new double[7];
-        for (int j = 0; j < 7; ++j) {
+        auto timings = new double[5];
+        for (int j = 0; j < 5; ++j) {
             auto start_time = std::chrono::system_clock::now();
             multiplyMatrixCannon(a, b, c, n, sizes[i]);
             auto end_time = std::chrono::system_clock::now();
@@ -84,7 +84,7 @@ void multiplyMatrixOMP(float *a, float *b, float *c, int n, int threads) {
         int max = getIdOfMax(&timings[0], 7);
 
         double sum = 0;
-        for (int j = 0; j < 7; ++j) {
+        for (int j = 0; j < 5; ++j) {
             if (j != min && j != max) {
                 sum += timings[j];
             }
