@@ -5,14 +5,7 @@
 #include "omp_mm.h"
 #include "mm.h"
 
-void distributeMatrix(const float *a, const float *b, int N) {
-    int processes;
-    MPI_Comm_size(MPI_COMM_WORLD, &processes);
-
-    int width = int(sqrt(processes - 1));
-    if (width == 0) width = 1;
-
-    int block_size = N / width;
+void distributeMatrix(const float *a, const float *b, int N, int processes, int width, int block_size) {
     for (int i = 0; i < processes - 1; ++i) {
         // compute cell index for multiplying the matrix block-wise
         int cell = (i % width + (i / width)) % width;
@@ -52,13 +45,7 @@ void distributeMatrix(const float *a, const float *b, int N) {
     }
 }
 
-void collectMatrix(float *c, int N) {
-    int processes;
-    MPI_Comm_size(MPI_COMM_WORLD, &processes);
-
-    int width = int(sqrt(processes - 1));
-    int block_size = width == 0 ? N : N / width;
-
+void collectMatrix(float *c, int N, int processes, int width, int block_size) {
     float* buffer[processes - 1];
     auto* requests = new MPI_Request[processes - 1];
 
@@ -72,8 +59,7 @@ void collectMatrix(float *c, int N) {
     for (int i = 0; i < processes - 1; ++i) {
         MPI_Wait(&requests[i], MPI_STATUS_IGNORE);
 
-        int c_ptr = 0;
-        if (width > 0) c_ptr = (i / width) * block_size * N + (i % width) * block_size;
+        int c_ptr = (i / width) * block_size * N + (i % width) * block_size;
 
         for(int row = 0; row < block_size; ++row) {
             int start_ptr = c_ptr;
@@ -89,14 +75,19 @@ void collectMatrix(float *c, int N) {
 }
 
 void multiplyMatrixMPI(const float *a, const float *b, float *c, int N) {
-    distributeMatrix(a, b, N);
-    collectMatrix(c, N);
+    int processes;
+    MPI_Comm_size(MPI_COMM_WORLD, &processes);
+
+    int width = int(sqrt(processes - 1));
+    if (width == 0) width = 1;
+
+    int block_size = N / width;
+
+    distributeMatrix(a, b, N, processes, width, block_size);
+    collectMatrix(c, N, processes, width, block_size);
 }
 
 void receiveMatrixParts(float *a, float *b, int block_size) {
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
     // tag=0 for matrix a
     MPI_Request req_a;
     MPI_Irecv(a, block_size * block_size, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req_a);
@@ -114,12 +105,7 @@ void computePart(float *a, float *b, float *c, int block_size, bool open_mp) {
     else multiplyMatrix(a, b, c, block_size);
 }
 
-MPI_Request sendRowWise(float *b, int block_size) {
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    int width = int(sqrt(size - 1));
+MPI_Request sendRowWise(float *b, int block_size, int rank, int width) {
     int next_process = rank - width;
     if (next_process <= 0) next_process += width * width;
 
@@ -128,27 +114,16 @@ MPI_Request sendRowWise(float *b, int block_size) {
     return request;
 }
 
-MPI_Request receiveRowWise(float *b, int block_size) {
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    int width = int(sqrt(size - 1));
+MPI_Request receiveRowWise(float *b, int block_size, int rank, int width) {
     int next_process = rank + width;
-    if (next_process >= size) next_process -= width * width;
+    if (next_process >= width * width + 1) next_process -= width * width;
 
     MPI_Request request;
     MPI_Irecv(b, block_size * block_size, MPI_FLOAT, next_process, 0, MPI_COMM_WORLD, &request);
     return request;
 }
 
-MPI_Request sendColWise(float *a, int block_size) {
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    int width = int(sqrt(size - 1));
-
+MPI_Request sendColWise(float *a, int block_size, int rank, int width) {
     int next_process;
     if ((rank - 1) % width == 0) next_process = rank + width - 1;
     else next_process = rank - 1;
@@ -158,13 +133,7 @@ MPI_Request sendColWise(float *a, int block_size) {
     return request;
 }
 
-MPI_Request receiveColWise(float *a, int block_size) {
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    int width = int(sqrt(size - 1));
-
+MPI_Request receiveColWise(float *a, int block_size, int rank, int width) {
     int prev_process;
     if (rank % width == 0) prev_process = rank - width + 1;
     else prev_process = rank + 1;
@@ -175,9 +144,6 @@ MPI_Request receiveColWise(float *a, int block_size) {
 }
 
 void submitMatrixPart(float *c, int block_size) {
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
     MPI_Send(c, block_size * block_size, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
 }
 
@@ -207,11 +173,11 @@ void handleMatrixPart(int N, bool open_mp) {
     computePart(a, b, c, block_size, open_mp);
 
     for (int i = 0; i < width - 1; ++i) {
-        MPI_Request send_col = sendColWise(a, block_size);
-        MPI_Request send_row = sendRowWise(b, block_size);
+        MPI_Request send_col = sendColWise(a, block_size, rank, width);
+        MPI_Request send_row = sendRowWise(b, block_size, rank, width);
 
-        MPI_Request recv_col = receiveColWise(buffer_a, block_size);
-        MPI_Request recv_row = receiveRowWise(buffer_b, block_size);
+        MPI_Request recv_col = receiveColWise(buffer_a, block_size, rank, width);
+        MPI_Request recv_row = receiveRowWise(buffer_b, block_size, rank, width);
 
         MPI_Wait(&send_col, MPI_STATUS_IGNORE);
         MPI_Wait(&send_row, MPI_STATUS_IGNORE);
