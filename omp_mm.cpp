@@ -2,7 +2,7 @@
 #include <omp.h>
 #include <math.h>
 
-const int block_size = 16;
+const int block_size = 32;
 
 void multiplyMatrixPart(float *a, float *b, float *c, int n, int a_row, int b_col) {
     int row_remaining = std::min(n - a_row, block_size);
