@@ -78,6 +78,26 @@ omp-38: 3500x3500, Time: 4.3926s
 omp-38: 4000x4000, Time: 6.3686s
 omp-38: 4500x4500, Time: 9.4285s
 
+omp-49: 500x500, Time: 0.0369s
+omp-49: 1000x1000, Time: 0.1383s
+omp-49: 1500x1500, Time: 0.4060s
+omp-49: 2000x2000, Time: 0.9227s
+omp-49: 2500x2500, Time: 1.8131s
+omp-49: 3000x3000, Time: 2.9190s
+omp-49: 3500x3500, Time: 4.5862s
+omp-49: 4000x4000, Time: 6.6880s
+omp-49: 4500x4500, Time: 9.4697s
+
+omp-64: 500x500, Time: 0.0323s
+omp-64: 1000x1000, Time: 0.1210s
+omp-64: 1500x1500, Time: 0.3523s
+omp-64: 2000x2000, Time: 0.7939s
+omp-64: 2500x2500, Time: 1.5526s
+omp-64: 3000x3000, Time: 2.6672s
+omp-64: 3500x3500, Time: 4.2977s
+omp-64: 4000x4000, Time: 6.2759s
+omp-64: 4500x4500, Time: 9.1516s
+
 # Updated mpi algorithm; times include async matrix distribution
 
 mpi-64: 496x496, Time: 0.0138s
