@@ -78,76 +78,6 @@ omp-38: 3500x3500, Time: 4.3926s
 omp-38: 4000x4000, Time: 6.3686s
 omp-38: 4500x4500, Time: 9.4285s
 
-mpi-4: 500x500, Time: 0.0867s
-mpi-4: 1000x1000, Time: 0.6937s
-mpi-4: 1500x1500, Time: 2.3613s
-mpi-4: 2000x2000, Time: 5.5322s
-mpi-4: 2500x2500, Time: 10.7567s
-mpi-4: 3000x3000, Time: 18.8341s
-mpi-4: 3500x3500, Time: 29.7814s
-mpi-4: 4000x4000, Time: 44.1214s
-mpi-4: 4500x4500, Time: 62.8241s
-
-mpi-9: 504x504, Time: 0.0404s
-mpi-9: 999x999, Time: 0.3102s
-mpi-9: 1503x1503, Time: 1.0610s
-mpi-9: 1998x1998, Time: 2.4903s
-mpi-9: 2502x2502, Time: 4.9155s
-mpi-9: 2997x2997, Time: 8.3875s
-mpi-9: 3501x3501, Time: 13.2871s
-mpi-9: 3996x3996, Time: 19.6896s
-mpi-9: 4500x4500, Time: 28.5172s
-
-mpi-16: 500x500, Time: 0.0238s
-mpi-16: 1000x1000, Time: 0.1803s
-mpi-16: 1500x1500, Time: 0.6043s
-mpi-16: 2000x2000, Time: 1.4177s
-mpi-16: 2500x2500, Time: 2.7672s
-mpi-16: 3000x3000, Time: 4.8320s
-mpi-16: 3500x3500, Time: 7.6091s
-mpi-16: 4000x4000, Time: 11.2813s
-mpi-16: 4500x4500, Time: 15.9732s
-
-mpi-25: 500x500, Time: 0.0155s
-mpi-25: 1000x1000, Time: 0.1152s
-mpi-25: 1500x1500, Time: 0.3811s
-mpi-25: 2000x2000, Time: 0.9061s
-mpi-25: 2500x2500, Time: 1.7543s
-mpi-25: 3000x3000, Time: 3.0392s
-mpi-25: 3500x3500, Time: 4.7951s
-mpi-25: 4000x4000, Time: 7.2401s
-mpi-25: 4500x4500, Time: 10.2342s
-
-mpi-36: 498x498, Time: 0.0114s
-mpi-36: 1002x1002, Time: 0.0824s
-mpi-36: 1500x1500, Time: 0.2743s
-mpi-36: 1998x1998, Time: 0.6301s
-mpi-36: 2502x2502, Time: 1.2379s
-mpi-36: 3000x3000, Time: 2.1213s
-mpi-36: 3498x3498, Time: 3.3741s
-mpi-36: 4002x4002, Time: 5.0314s
-mpi-36: 4500x4500, Time: 7.2113s
-
-mpi-49: 497x497, Time: 0.0091s
-mpi-49: 1001x1001, Time: 0.0620s
-mpi-49: 1498x1498, Time: 0.2039s
-mpi-49: 2002x2002, Time: 0.4733s
-mpi-49: 2499x2499, Time: 0.9077s
-mpi-49: 3003x3003, Time: 1.5811s
-mpi-49: 3500x3500, Time: 2.4867s
-mpi-49: 4004x4004, Time: 3.7349s
-mpi-49: 4501x4501, Time: 5.2841s
-
-mpi-64: 504x504, Time: 0.0076s
-mpi-64: 1000x1000, Time: 0.0518s
-mpi-64: 1504x1504, Time: 0.1703s
-mpi-64: 2000x2000, Time: 0.3670s
-mpi-64: 2504x2504, Time: 0.7117s
-mpi-64: 3000x3000, Time: 1.2262s
-mpi-64: 3504x3504, Time: 1.9385s
-mpi-64: 4000x4000, Time: 2.8608s
-mpi-64: 4504x4504, Time: 4.0996s
-
 # Updated mpi algorithm; times include async matrix distribution
 
 mpi-64: 496x496, Time: 0.0138s
@@ -209,14 +139,6 @@ mpiomp-36: 3000x3000, Time: 1.5248s
 mpiomp-36: 3498x3498, Time: 2.3019s
 mpiomp-36: 4002x4002, Time: 3.3358s
 mpiomp-36: 4500x4500, Time: 5.1010s
-
-omp-36: 500x500, Time: 1.1837s
-omp-36: 1000x1000, Time: 9.1384s
-omp-36: 1500x1500, Time: 41.6498s
-omp-36: 2000x2000, Time: 72.3246s
-omp-36: 2500x2500, Time: 117.2882s
-omp-36: 3000x3000, Time: 329.4638s
-omp-36: 3500x3500, Time: 451.7212s
 
 mpi-25: 500x500, Time: 0.0194s
 mpi-25: 1000x1000, Time: 0.1396s
@@ -284,18 +206,6 @@ mpi-4: 1500x1500, Time: 2.3820s
 mpi-4: 2000x2000, Time: 5.5769s
 mpi-4: 2500x2500, Time: 10.8345s
 mpi-4: 3000x3000, Time: 18.9489s
-mpi-4: 3500x3500, Time: 0.0000s
-mpi-4: 4000x4000, Time: 0.0000s
-mpi-4: 4500x4500, Time: 0.0000s
-
-mpiomp-4: 500x500, Time: 0.0000s
-mpiomp-4: 1000x1000, Time: 0.0000s
-mpi-4: 500x500, Time: 0.0899s
-mpi-4: 1000x1000, Time: 0.7061s
-mpi-4: 1500x1500, Time: 2.3830s
-mpi-4: 2000x2000, Time: 5.5845s
-mpi-4: 2500x2500, Time: 10.8483s
-mpi-4: 3000x3000, Time: 18.9496s
 mpi-4: 3500x3500, Time: 29.9883s
 mpi-4: 4000x4000, Time: 44.3107s
 mpi-4: 4500x4500, Time: 63.2653s
