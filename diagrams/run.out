@@ -1,22 +1,22 @@
-naive: 500x500, Time: 0.3524s
-naive: 1000x1000, Time: 2.8191s
-naive: 1500x1500, Time: 9.9958s
-naive: 2000x2000, Time: 21.7125s
-naive: 2500x2500, Time: 57.3870s
-naive: 3000x3000, Time: 106.7012s
-naive: 3500x3500, Time: 207.4920s
-naive: 4000x4000, Time: 230.1750s
-naive: 4500x4500, Time: 445.8400s
+row-oriented (seq): 500x500, Time: 0.3524s
+row-oriented (seq): 1000x1000, Time: 2.8191s
+row-oriented (seq): 1500x1500, Time: 9.9958s
+row-oriented (seq): 2000x2000, Time: 21.7125s
+row-oriented (seq): 2500x2500, Time: 57.3870s
+row-oriented (seq): 3000x3000, Time: 106.7012s
+row-oriented (seq): 3500x3500, Time: 207.4920s
+row-oriented (seq): 4000x4000, Time: 230.1750s
+row-oriented (seq): 4500x4500, Time: 445.8400s
 
-seq: 500x500, Time: 0.3250s
-seq: 1000x1000, Time: 2.5520s
-seq: 1500x1500, Time: 8.8686s
-seq: 2000x2000, Time: 20.6917s
-seq: 2500x2500, Time: 39.9139s
-seq: 3000x3000, Time: 70.5438s
-seq: 3500x3500, Time: 111.6588s
-seq: 4000x4000, Time: 167.2738s
-seq: 4500x4500, Time: 237.5060s
+block-oriented (seq): 500x500, Time: 0.3250s
+block-oriented (seq): 1000x1000, Time: 2.5520s
+block-oriented (seq): 1500x1500, Time: 8.8686s
+block-oriented (seq): 2000x2000, Time: 20.6917s
+block-oriented (seq): 2500x2500, Time: 39.9139s
+block-oriented (seq): 3000x3000, Time: 70.5438s
+block-oriented (seq): 3500x3500, Time: 111.6588s
+block-oriented (seq): 4000x4000, Time: 167.2738s
+block-oriented (seq): 4500x4500, Time: 237.5060s
 
 omp-4: 500x500, Time: 0.1042s
 omp-4: 1000x1000, Time: 0.6891s
