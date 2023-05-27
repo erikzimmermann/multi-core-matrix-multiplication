@@ -1,9 +1,9 @@
 #include <iostream>
 #include <chrono>
 #include <mpi.h>
-#include "mm.h"
-#include "mpi_mm.h"
-#include "omp_mm.h"
+#include "mm_seq.h"
+#include "mm_mpi.h"
+#include "mm_omp.h"
 #include <random>
 
 std::seed_seq SEED{42};

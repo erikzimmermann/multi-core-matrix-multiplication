@@ -1,9 +1,9 @@
-#include "mpi_mm.h"
+#include "mm_mpi.h"
 #include <mpi.h>
 #include <random>
 #include <iostream>
-#include "omp_mm.h"
-#include "mm.h"
+#include "mm_omp.h"
+#include "mm_seq.h"
 
 void distributeMatrix(const float *a, const float *b, int N, int processes, int width, int block_size) {
     for (int i = 0; i < processes - 1; ++i) {

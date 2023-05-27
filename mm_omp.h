@@ -3,4 +3,4 @@
 
 void multiplyMatrixOMP(float *a, float *b, float *c, int size, int threads);
 
-#endif //MULTI_CORE_MATRIX_MULTIPLICATION_OMP_MM_H
+#endif

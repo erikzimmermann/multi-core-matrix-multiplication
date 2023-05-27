@@ -1,4 +1,4 @@
-#include "mm.h"
+#include "mm_seq.h"
 
 void multiplyMatrix(float *a, float *b, float *c,
                     int crow, int ccol,

@@ -1,4 +1,4 @@
-#include "omp_mm.h"
+#include "mm_omp.h"
 #include <omp.h>
 #include <math.h>
 
