@@ -1,4 +1,4 @@
-# multi-core-matrix-multiplication
+# Matrix Multiplication with MPI and OpenMP
 This thesis is part of the seminar "Parallel Programming", which allows students to get a first insight into different technologies and techniques to enable the great advantage of multi-core computing. The aim of this paper is to provide an overview of different optimisations for simple matrix multiplication in a sequential and parallel way and to demonstrate the differences between single- and multi-core algorithms on a CPU using MPI and OpenMP.
 
 ### Execution
