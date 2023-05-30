@@ -16,7 +16,7 @@ ml GCC/11.3.0
 ml OpenMPI/4.1.4
 ```
 
-Compile with: `mpic++ -fopenmp test-matrix.cpp mpi_mm.cpp omp_mm.cpp mm.cpp -o test-matrix`
+Compile with: `mpic++ -fopenmp matrix-multiplication.cpp mm_mpi.cpp mm_omp.cpp mm_seq.cpp -o matrix-multiplication`
 
 Run: `./matrix-multiplication <matrix-size> <naive, seq, omp[-<#threads>]>`   
 Run with MPI: `mpirun -np 17 -npernode 17 -hostfile hosts.txt ./matrix-multiplication <matrix-size> mpi`  
